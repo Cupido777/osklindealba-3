@@ -1,0 +1,11 @@
+# Prevenir ejecución de PHP en uploads
+<FilesMatch "\.(php|php5|phtml)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Solo permitir tipos de archivo específicos
+<FilesMatch "\.(mp3|wav|ogg|pdf|jpg|jpeg|png|gif)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>

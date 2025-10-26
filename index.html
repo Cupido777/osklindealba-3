@@ -1,67 +1,77 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- === OPTIMIZACIONES SEO AVANZADAS === -->
+    <!-- === OPTIMIZACIONES SEO AVANZADAS & PWA === -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Meta Tags Mejorados -->
     <title>ODAM — Producción Musical Profesional | Mezcla, Masterización & Consultoría Cristiana</title>
-    
-    <!-- === GOOGLE ANALYTICS === -->
-    <!-- Google tag (gtag.js) --> 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C7PBME3G90"></script> 
-    <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-C7PBME3G90'); 
-    </script>
-    
     <meta name="description" content="ODAM - Producción musical profesional especializada en música cristiana. Mezcla, masterización, consultoría técnica y desarrollo digital para artistas con propósito.">
     <meta name="keywords" content="producción musical cristiana, mezcla profesional, masterización, música de adoración, consultoría técnica, ODAM, Osklin De Alba, estudio grabación cristiana">
     <meta name="author" content="ODAM - Osklin De Alba">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     
-    <!-- Open Graph Optimizado -->
+    <!-- === PWA CONFIGURATION === -->
+    <meta name="theme-color" content="#c8a25f">
+    <meta name="msapplication-TileColor" content="#c8a25f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ODAM Producción">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/jpeg" href="./logo.jpg">
+    <link rel="apple-touch-icon" href="./logo-192x192.png">
+    <link rel="apple-touch-startup-image" href="./logo-512x512.png">
+    
+    <!-- === OPEN GRAPH OPTIMIZADO === -->
     <meta property="og:title" content="ODAM — Producción Musical Profesional Cristiana">
     <meta property="og:description" content="Especialistas en producción musical cristiana, mezcla, masterización y consultoría técnica para artistas y ministerios.">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="./logo.jpg">
+    <meta property="og:image" content="./logo-512x512.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
     <meta property="og:url" content="https://www.osklindealba.com">
     <meta property="og:site_name" content="ODAM Producción Musical">
     <meta property="og:locale" content="es_ES">
     
-    <!-- Twitter Card Optimizado -->
+    <!-- === TWITTER CARD OPTIMIZADO === -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="ODAM — Producción Musical Cristiana Profesional">
     <meta name="twitter:description" content="Producción musical de élite para artistas y ministerios cristianos.">
-    <meta name="twitter:image" content="./logo.jpg">
+    <meta name="twitter:image" content="./logo-512x512.png">
+    <meta name="twitter:site" content="@osklin27">
+    <meta name="twitter:creator" content="@osklin27">
     
-    <!-- Preconexiones Críticas Optimizadas -->
+    <!-- === PRECONEXIONES CRÍTICAS OPTIMIZADAS CON CDN === -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.osklindealba.com">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
     
-    <!-- Fuentes Optimizadas con display=swap -->
+    <!-- === FUENTES OPTIMIZADAS === -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Iconos con carga diferida -->
+    <!-- === ICONOS CON CARGA DIFERIDA === -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" media="print" onload="this.media='all'">
     
-    <!-- CSS Principal -->
+    <!-- === CSS PRINCIPAL === -->
     <link rel="stylesheet" href="styles.css">
     
-    <!-- Sistema de Estadísticas Mejorado -->
+    <!-- === SISTEMA DE ESTADÍSTICAS MEJORADO === -->
     <link rel="stylesheet" href="stats-styles.css">
     
-    <!-- Preload de Imágenes Críticas Optimizado -->
+    <!-- === PRELOAD DE IMÁGENES CRÍTICAS OPTIMIZADO === -->
     <link rel="preload" href="./logo.jpg" as="image" fetchpriority="high">
     <link rel="preload" href="./tu-foto.jpg" as="image" fetchpriority="high">
+    <link rel="preload" href="./logo-192x192.png" as="image">
+    <link rel="preload" href="./logo-512x512.png" as="image">
     
-    <!-- Favicon -->
+    <!-- === FAVICON MULTI-PLATAFORMA === -->
     <link rel="icon" href="./logo.jpg" type="image/jpeg">
-    <link rel="apple-touch-icon" href="./logo.jpg">
-    
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#c8a25f">
-    <meta name="msapplication-TileColor" content="#c8a25f">
+    <link rel="apple-touch-icon" sizes="192x192" href="./logo-192x192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="./logo-512x512.png">
+    <link rel="shortcut icon" href="./logo.jpg">
     
     <!-- === SCHEMA.ORG MARKUP MEJORADO === -->
     <script type="application/ld+json">
@@ -71,7 +81,8 @@
       "name": "ODAM - Osklin De Alba",
       "description": "Producción musical profesional especializada en música cristiana, mezcla, masterización y consultoría técnica para artistas y ministerios",
       "url": "https://www.osklindealba.com",
-      "logo": "https://www.osklindealba.com/logo.jpg",
+      "logo": "https://www.osklindealba.com/logo-512x512.png",
+      "image": "https://www.osklindealba.com/logo-512x512.png",
       "sameAs": [
         "https://www.facebook.com/share/17AK7d5HDr/",
         "https://www.instagram.com/osklin27",
@@ -96,8 +107,47 @@
         "@type": "Person",
         "name": "Osklin De Alba"
       },
-      "foundingDate": "2022"
+      "foundingDate": "2022",
+      "potentialAction": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "email": "odeam@osklindealba.com",
+        "telephone": "+57-314-290-5621",
+        "url": "https://www.osklindealba.com"
+      }
     }
+    </script>
+
+    <!-- === GOOGLE ANALYTICS 4 === -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX', {
+            page_title: document.title,
+            page_location: window.location.href,
+            transport_type: 'beacon'
+        });
+    </script>
+
+    <!-- === PERFORMANCE & LIGHTHOUSE OPTIMIZATIONS === -->
+    <script>
+        // Preload critical resources
+        const criticalResources = [
+            '/styles.css',
+            '/script.js',
+            '/stats-system.js',
+            '/lighthouse-config.js'
+        ];
+        
+        criticalResources.forEach(resource => {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.href = resource;
+            link.as = resource.endsWith('.css') ? 'style' : 'script';
+            document.head.appendChild(link);
+        });
     </script>
 </head>
 <body>
@@ -107,14 +157,16 @@
     <!-- Fondo completo para toda la página -->
     <div class="full-page-background" aria-hidden="true"></div>
 
-    <!-- Modal Formulario de Contacto -->
+    <!-- === MODAL FORMULARIO DE CONTACTO MEJORADO === -->
     <div id="contact-modal" class="modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modal-title">Solicitar Cotización</h2>
                 <button class="modal-close" aria-label="Cerrar modal">&times;</button>
             </div>
-            <form id="contact-form" class="contact-form">
+            <form id="contact-form" class="contact-form" enctype="multipart/form-data">
+                <input type="hidden" name="form_type" value="contact">
+                
                 <div class="form-group">
                     <label for="service-type">Tipo de Servicio *</label>
                     <select id="service-type" name="service-type" required>
@@ -130,17 +182,17 @@
 
                 <div class="form-group">
                     <label for="name">Nombre Completo *</label>
-                    <input type="text" id="name" name="name" required aria-required="true">
+                    <input type="text" id="name" name="name" required aria-required="true" minlength="2" maxlength="100">
                 </div>
 
                 <div class="form-group">
                     <label for="email">Correo Electrónico *</label>
-                    <input type="email" id="email" name="email" required aria-required="true">
+                    <input type="email" id="email" name="email" required aria-required="true" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
                 </div>
 
                 <div class="form-group">
                     <label for="phone">Teléfono / WhatsApp *</label>
-                    <input type="tel" id="phone" name="phone" required aria-required="true">
+                    <input type="tel" id="phone" name="phone" required aria-required="true" pattern="[0-9+\-\s()]{10,}">
                 </div>
 
                 <div class="form-group">
@@ -171,33 +223,47 @@
 
                 <div class="form-group">
                     <label for="deadline">Fecha Límite Estimada</label>
-                    <input type="text" id="deadline" name="deadline" placeholder="Ej: 2 semanas, 1 mes, etc.">
+                    <input type="text" id="deadline" name="deadline" placeholder="Ej: 2 semanas, 1 mes, etc." maxlength="50">
+                </div>
+
+                <div class="form-group">
+                    <label for="audio-file">Archivo de Audio (Opcional)</label>
+                    <input type="file" id="audio-file" name="audio-file" accept=".mp3,.wav,.ogg,audio/*" class="file-input">
+                    <small>Formatos aceptados: MP3, WAV, OGG (Máx. 10MB)</small>
                 </div>
 
                 <div class="form-group">
                     <label for="message">Detalles del Proyecto *</label>
-                    <textarea id="message" name="message" rows="5" placeholder="Describe tu proyecto, necesidades específicas, referencias musicales, y cualquier detalle importante..." required aria-required="true"></textarea>
+                    <textarea id="message" name="message" rows="5" placeholder="Describe tu proyecto, necesidades específicas, referencias musicales, y cualquier detalle importante..." required aria-required="true" minlength="10" maxlength="2000"></textarea>
+                    <small id="char-counter">0/2000 caracteres</small>
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="submit-button">
                         <i class="fas fa-paper-plane" aria-hidden="true"></i> Enviar Solicitud
                     </button>
                     <button type="button" class="btn btn-secondary modal-close">
                         Cancelar
                     </button>
                 </div>
+
+                <div class="form-footer">
+                    <p class="privacy-notice">
+                        <i class="fas fa-shield-alt"></i> Tus datos están protegidos. No compartimos tu información con terceros.
+                    </p>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- === NUEVO: BANNER DE CARGA RÁPIDA === -->
+    <!-- === BANNER DE CARGA RÁPIDA === -->
     <div id="loading-progress" class="loading-progress" aria-hidden="true">
         <div class="progress-bar">
             <div class="progress-fill"></div>
         </div>
     </div>
 
+    <!-- === HEADER MEJORADO === -->
     <header role="banner">
         <div class="header-inner">
             <a class="brand" href="#inicio" aria-label="ODAM - Ir al inicio">
@@ -212,7 +278,6 @@
                 <a href="#servicios">Servicios</a>
                 <a href="#proyectos">Proyectos</a>
                 <a href="#fe">Inspiración</a>
-                <!-- NUEVOS ENLACES EN EL MENÚ -->
                 <a href="#interaccion">Interacción</a>
                 <a href="#contacto">Contacto</a>
                 <a class="cta" href="https://wa.me/573142905621?text=Hola%20ODAM%2C%20quiero%20informaci%C3%B3n%20sobre%20tus%20servicios." target="_blank" rel="noopener">
@@ -237,6 +302,9 @@
                         <a class="btn btn-secondary" href="#proyectos">
                             <i class="fas fa-headphones" aria-hidden="true"></i> Ver Trabajos
                         </a>
+                        <button class="btn btn-outline" id="pwa-install-button" style="display: none;">
+                            <i class="fas fa-download" aria-hidden="true"></i> Instalar App
+                        </button>
                     </div>
                     <div class="stats">
                         <div class="stat-card">
@@ -268,6 +336,9 @@
                             <h3>Osklin De Alba</h3>
                             <p>Fundador & Productor Principal</p>
                             <div class="visual-tag">Studio Quality</div>
+                            <div class="pwa-badge" style="margin-top: 10px; background: #c8a25f; color: black; padding: 5px 10px; border-radius: 15px; font-size: 0.8rem; display: inline-block;">
+                                <i class="fas fa-mobile-alt"></i> App Disponible
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -308,7 +379,7 @@
                         <div class="service-ideal">
                             <strong>Ideal para:</strong> Músicos, artistas, creadores de contenido que buscan calidad profesional.
                         </div>
-                        <a class="btn btn-primary" href="https://wa.me/573142905621?text=Hola%20ODAM%2C%20estoy%20interesado%20en%20servicios%20de%20Producci%C3%B3n%20Musical." target="_blank" rel="noopener">
+                        <a class="btn btn-primary open-contact-modal" data-service="produccion-musical">
                             <i class="fab fa-whatsapp" aria-hidden="true"></i> Solicitar este servicio
                         </a>
                     </div>
@@ -378,7 +449,7 @@
                         <div class="service-ideal">
                             <strong>Ideal para:</strong> Estudios de grabación, empresas audiovisuales, productores con procesos complejos que necesitan estandarización y optimización.
                         </div>
-                        <a class="btn btn-primary" href="https://wa.me/573142905621?text=Hola%20ODAM%2C%20estoy%20interesado%20en%20Consultor%C3%ADa%20y%20Optimizaci%C3%B3n%20T%C3%A9cnica." target="_blank" rel="noopener">
+                        <a class="btn btn-primary open-contact-modal" data-service="consultoria-tecnica">
                             <i class="fab fa-whatsapp" aria-hidden="true"></i> Solicitar Consultoría
                         </a>
                     </div>
@@ -411,7 +482,7 @@
                         <div class="service-ideal">
                             <strong>Ideal para:</strong> Artistas, marcas personales y empresas que necesitan visibilidad digital.
                         </div>
-                        <a class="btn btn-primary" href="https://wa.me/573142905621?text=Hola%20ODAM%2C%20estoy%20interesado%20en%20Desarrollo%20y%20Formaci%C3%B3n%20Digital." target="_blank" rel="noopener">
+                        <a class="btn btn-primary open-contact-modal" data-service="desarrollo-digital">
                             <i class="fab fa-whatsapp" aria-hidden="true"></i> Solicitar este servicio
                         </a>
                     </div>
@@ -419,7 +490,7 @@
             </div>
         </section>
 
-        <!-- Proyectos Section - 6 TARJETAS MEJORADAS -->
+        <!-- Proyectos Section -->
         <section id="proyectos" class="section projects-section" aria-labelledby="proyectos-title">
             <div class="section-header">
                 <h2 id="proyectos-title" class="section-title">Proyectos Destacados</h2>
@@ -435,7 +506,7 @@
                         <h3>Tú Me Sostendrás</h3>
                         <p>Composición y producción integral de un tema de adoración congregacional, inspirado en Salmo 55:22. Sonido contemporáneo que fusiona atmósferas electrónicas con instrumentos acústicos, transmitiendo esperanza, confianza y reposo en Dios.</p>
                         
-                        <!-- REPRODUCTOR DE AUDIO CON ONDAS INTERACTIVAS MEJORADAS -->
+                        <!-- REPRODUCTOR DE AUDIO -->
                         <div class="audio-player-mini">
                             <button class="audio-play-btn" aria-label="Reproducir Tú Me Sostendrás">
                                 <i class="fas fa-play" aria-hidden="true"></i>
@@ -462,7 +533,7 @@
                             <span class="tag">Worship</span>
                             <span class="tag">Cristiana Contemporáneo</span>
                         </div>
-                        <a class="btn btn-outline" href="https://wa.me/573142905621?text=Hola%20ODAM%2C%20quiero%20informaci%C3%B3n%20sobre%20Armadura%20de%20Dios." target="_blank" rel="noopener">
+                        <a class="btn btn-outline open-contact-modal" data-service="produccion-musical" data-project="Tú Me Sostendrás">
                             <i class="fas fa-play-circle" aria-hidden="true"></i> Solicitar Similar
                         </a>
                     </div>
@@ -505,7 +576,7 @@
                             <span class="tag">Worship</span>
                             <span class="tag">Contemporáneo</span>
                         </div>
-                        <a class="btn btn-outline" href="https://wa.me/573142905621?text=Hola%20ODAM%2C%20quiero%20informaci%C3%B3n%20sobre%20Renovados%20En%20Tu%20Voluntad." target="_blank" rel="noopener">
+                        <a class="btn btn-outline open-contact-modal" data-service="produccion-musical" data-project="Renovados En Tu Voluntad">
                             <i class="fas fa-play-circle" aria-hidden="true"></i> Solicitar Similar
                         </a>
                     </div>
@@ -548,7 +619,7 @@
                             <span class="tag">Worship</span>
                             <span class="tag">Contemporáneo</span>
                         </div>
-                        <a class="btn btn-outline" href="https://wa.me/573142905621?text=Hola%20ODAM%2C%20quiero%20informaci%C3%B3n%20sobre%20En%20Ti%20Conf%C3%ADo%20Se%C3%B1or." target="_blank" rel="noopener">
+                        <a class="btn btn-outline open-contact-modal" data-service="produccion-musical" data-project="En Ti Confío Señor">
                             <i class="fas fa-play-circle" aria-hidden="true"></i> Solicitar Similar
                         </a>
                     </div>
@@ -590,21 +661,21 @@
                             <span class="tag">Bachata</span>
                             <span class="tag">Latino</span>
                         </div>
-                        <a class="btn btn-outline" href="https://wa.me/573142905621?text=Hola%20ODAM%2C%20quiero%20informaci%C3%B3n%20sobre%20No%20Me%20Apoyo." target="_blank" rel="noopener">
+                        <a class="btn btn-outline open-contact-modal" data-service="produccion-musical" data-project="El Diezmo Es Del Señor">
                             <i class="fas fa-play-circle" aria-hidden="true"></i> Solicitar Similar
                         </a>
                     </div>
                     <audio id="audio-el-diezmo-es-del-senor-version-bachata" src="./el-diezmo-es-del-senor-version-bachata.mp3" preload="metadata" loop></audio>
                 </div>
 
-                <!-- NUEVA Tarjeta 5 -->
+                <!-- Tarjeta 5 -->
                 <div class="project-card fade-in" id="project-jonas-y-el-gran-pez">
                     <div class="project-image">
                         <div class="project-badge">En Producción</div>
                     </div>
                     <div class="project-content">
                         <h3>Jonás Y El Gran Pez</h3>
-                        <p>Composición y producción completa inspirada en el libro de Jonás. Una propuesta de adoración contemporánea que narra el encuentro entre la gracia y la obediencia, recordando que el propósito de Dios siempre prevalece. Con una producción worship moderna, arreglos envolventes y una interpretación cargada de sinceridad, la canción combina profundidad bíblica con un sonido congregacional actual. Ideal para momentos de ministración, adoración profunda y enseñanza sobre la fidelidad y misericordia divina.</p>
+                        <p>Composición y producción completa inspirada en el libro de Jonás. Una propuesta de adoración contemporánea que narra el encuentro entre la gracia y la obediencia, recordando que el propósito de Dios siempre prevalece.</p>
                         
                         <div class="audio-player-mini">
                             <button class="audio-play-btn" aria-label="Reproducir Jonas Y El Gran Pez">
@@ -633,21 +704,21 @@
                             <span class="tag">Worship</span>
                             <span class="tag">Intimo</span>
                         </div>
-                        <a class="btn btn-outline" href="https://wa.me/573142905621?text=Hola%20ODAM%2C%20quiero%20informaci%C3%B3n%20sobre%20Jon%C3%A1s%20Y%20El%20Gran%20Pez." target="_blank" rel="noopener">
+                        <a class="btn btn-outline open-contact-modal" data-service="produccion-musical" data-project="Jonás Y El Gran Pez">
                             <i class="fas fa-play-circle" aria-hidden="true"></i> Solicitar Similar
                         </a>
                     </div>
                     <audio id="audio-jonas-y-el-gran-pez" src="./jonas-y-el-gran-pez.mp3" preload="metadata" loop></audio>
                 </div>
 
-                <!-- NUEVA Tarjeta 6 -->
+                <!-- Tarjeta 6 -->
                 <div class="project-card fade-in" id="project-el-hijo-de-manoa">
                     <div class="project-image">
                         <div class="project-badge">En Producción</div>
                     </div>
                     <div class="project-content">
                         <h3>El Hijo De Manoa</h3>
-                        <p>Composición y producción inspirada en la historia de Sansón (Jueces 13–16). Una pieza de adoración narrativa que retrata la fuerza, caída y redención del "Hijo de Manoa" como reflejo de la gracia y el poder restaurador de Dios. Con una producción worship, marcada por dinámicas intensas, texturas profundas y una interpretación vocal emotiva, esta canción invita a reconocer que la verdadera fortaleza proviene solo del Señor. Ideal para momentos de adoración reflexiva y tiempos de ministración sobre restauración y propósito divino.</p>
+                        <p>Composición y producción inspirada en la historia de Sansón (Jueces 13–16). Una pieza de adoración narrativa que retrata la fuerza, caída y redención del "Hijo de Manoa" como reflejo de la gracia y el poder restaurador de Dios.</p>
                         
                         <div class="audio-player-mini">
                             <button class="audio-play-btn" aria-label="Reproducir El Hijo De Manoa">
@@ -676,7 +747,7 @@
                             <span class="tag">Worship</span>
                             <span class="tag">Cristiana Contemporánea</span>
                         </div>
-                        <a class="btn btn-outline" href="https://wa.me/573142905621?text=Hola%20ODAM%2C%20quiero%20informaci%C3%B3n%20sobre%20El%20Hijo%20De%20Manoa." target="_blank" rel="noopener">
+                        <a class="btn btn-outline open-contact-modal" data-service="produccion-musical" data-project="El Hijo De Manoa">
                             <i class="fas fa-play-circle" aria-hidden="true"></i> Solicitar Similar
                         </a>
                     </div>
@@ -719,7 +790,7 @@
         </section>
         -->
 
-        <!-- NUEVA SECCIÓN: Interacción -->
+        <!-- SECCIÓN INTERACCIÓN -->
         <section id="interaccion" class="section interaction-section" aria-labelledby="interaccion-title">
             <div class="section-header">
                 <h2 id="interaccion-title" class="section-title">Interacción</h2>
@@ -791,6 +862,9 @@
                 <div>
                     <h3>ODAM</h3>
                     <p>Producción Musical Con Propósito</p>
+                    <small style="color: #b0b0b0; font-size: 0.8rem;">
+                        <i class="fas fa-mobile-alt"></i> App PWA Disponible
+                    </small>
                 </div>
             </div>
             <div class="footer-links">
@@ -810,14 +884,86 @@
         </div>
         <div class="footer-bottom">
             <p>&copy; ODAM      2022      Osklin De Alba.      Todos los derechos reservados.</p>
+            <p style="margin-top: 10px; font-size: 0.8rem; color: #b0b0b0;">
+                <i class="fas fa-shield-alt"></i> Sitio seguro | 
+                <i class="fas fa-bolt"></i> Optimizado para performance | 
+                <i class="fas fa-mobile-alt"></i> PWA Ready
+            </p>
         </div>
     </footer>
 
-    <!-- Scripts optimizados con defer -->
+    <!-- === SCRIPTS OPTIMIZADOS CON DEFER === -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js" defer></script>
+    
+    <!-- === SISTEMAS PRINCIPALES === -->
     <script src="script.js" defer></script>
-
-    <!-- Sistema de Estadísticas Mejorado -->
     <script src="stats-system.js" defer></script>
+    <script src="lighthouse-config.js" defer></script>
+
+    <!-- === SERVICE WORKER REGISTRATION === -->
+    <script>
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('✅ ServiceWorker registration successful');
+                    })
+                    .catch(function(error) {
+                        console.log('❌ ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+
+        // Detectar modo PWA standalone
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            document.documentElement.classList.add('pwa-standalone');
+        }
+    </script>
+
+    <!-- === MANIFEST.JSON (debe estar en la raíz) === -->
+    <script type="application/manifest+json">
+        {
+            "name": "ODAM Producción Musical",
+            "short_name": "ODAM",
+            "description": "Producción musical profesional especializada en música cristiana",
+            "start_url": "/",
+            "display": "standalone",
+            "background_color": "#000000",
+            "theme_color": "#c8a25f",
+            "orientation": "portrait-primary",
+            "scope": "/",
+            "lang": "es",
+            "categories": ["music", "business", "productivity"],
+            "icons": [
+                {
+                    "src": "./logo-192x192.png",
+                    "sizes": "192x192",
+                    "type": "image/png",
+                    "purpose": "any maskable"
+                },
+                {
+                    "src": "./logo-512x512.png",
+                    "sizes": "512x512",
+                    "type": "image/png",
+                    "purpose": "any maskable"
+                }
+            ],
+            "screenshots": [
+                {
+                    "src": "./screenshot-mobile.png",
+                    "sizes": "375x667",
+                    "type": "image/png",
+                    "form_factor": "narrow"
+                },
+                {
+                    "src": "./screenshot-desktop.png",
+                    "sizes": "1280x720",
+                    "type": "image/png",
+                    "form_factor": "wide"
+                }
+            ]
+        }
+    </script>
 </body>
 </html>

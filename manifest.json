@@ -1,0 +1,25 @@
+{
+  "name": "ODAM - Producción Musical",
+  "short_name": "ODAM",
+  "description": "Producción musical profesional especializada en música cristiana. Mezcla, masterización, consultoría técnica y desarrollo digital.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#c8a25f",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "logo-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["music", "business", "entertainment"],
+  "lang": "es",
+  "scope": "/"
+}
