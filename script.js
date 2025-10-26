@@ -1,10 +1,105 @@
 // script.js - ODAM PRODUCCIÓN MUSICAL - SISTEMA COMPLETO OPTIMIZADO
 // Integraciones: Service Worker, GA4, Formulario Backend, PWA, CDN, Lighthouse
 
+// ===== SISTEMA DE TOKENS CSRF MEJORADO =====
+class CSRFTokenManager {
+    constructor() {
+        this.token = null;
+        this.tokenExpiry = null;
+        this.init();
+    }
+
+    async init() {
+        await this.generateCSRFToken();
+        this.setupTokenRefresh();
+    }
+
+    async generateCSRFToken() {
+        try {
+            // Generar token seguro
+            const randomBytes = new Uint8Array(32);
+            crypto.getRandomValues(randomBytes);
+            this.token = Array.from(randomBytes, byte => 
+                byte.toString(16).padStart(2, '0')
+            ).join('');
+            
+            // Establecer expiración (1 hora)
+            this.tokenExpiry = Date.now() + (60 * 60 * 1000);
+            
+            // Guardar en sessionStorage
+            sessionStorage.setItem('odam-csrf-token', this.token);
+            sessionStorage.setItem('odam-csrf-expiry', this.tokenExpiry.toString());
+            
+            console.log('✅ Token CSRF generado correctamente');
+            return this.token;
+            
+        } catch (error) {
+            console.error('❌ Error generando token CSRF:', error);
+            // Fallback a token básico
+            this.token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+            return this.token;
+        }
+    }
+
+    validateToken(token) {
+        if (!this.token || !this.tokenExpiry) {
+            console.warn('⚠️ Token CSRF no inicializado');
+            return false;
+        }
+
+        // Verificar expiración
+        if (Date.now() > this.tokenExpiry) {
+            console.warn('⚠️ Token CSRF expirado');
+            this.generateCSRFToken();
+            return false;
+        }
+
+        // Verificar coincidencia
+        const isValid = token === this.token;
+        if (!isValid) {
+            console.warn('⚠️ Token CSRF inválido');
+        }
+        
+        return isValid;
+    }
+
+    setupTokenRefresh() {
+        // Refrescar token cada 45 minutos
+        setInterval(() => {
+            this.generateCSRFToken();
+        }, 45 * 60 * 1000);
+    }
+
+    getToken() {
+        if (!this.token || Date.now() > this.tokenExpiry) {
+            this.generateCSRFToken();
+        }
+        return this.token;
+    }
+
+    static getStoredToken() {
+        try {
+            const token = sessionStorage.getItem('odam-csrf-token');
+            const expiry = sessionStorage.getItem('odam-csrf-expiry');
+            
+            if (token && expiry && Date.now() < parseInt(expiry)) {
+                return token;
+            }
+        } catch (error) {
+            console.error('Error obteniendo token almacenado:', error);
+        }
+        return null;
+    }
+}
+
+// Instancia global del administrador de tokens CSRF
+window.csrfTokenManager = new CSRFTokenManager();
+
 class AudioPlayerSystem {
     constructor() {
         this.audioPlayers = new Map();
         this.currentlyPlaying = null;
+        this.waveSystems = new Map();
         this.init();
     }
 
@@ -49,16 +144,20 @@ class AudioPlayerSystem {
             waveform: card.querySelector('.audio-waveform'),
             waveBars: card.querySelectorAll('.wave-bar'),
             audioPlayer: card.querySelector('.audio-player-mini'),
-            isPlaying: false,
-            waveformInterval: null
+            isPlaying: false
         };
+
+        // Inicializar sistema de ondas para este audio
+        const waveSystem = new InteractiveWaveSystem();
+        this.waveSystems.set(audioId, waveSystem);
 
         this.audioPlayers.set(audioId, player);
         this.bindPlayerEvents(player, audioId);
     }
 
     bindPlayerEvents(player, audioId) {
-        const { audio, playBtn, progressBar, audioTime, waveform, waveBars, audioPlayer } = player;
+        const { audio, playBtn, progressBar, audioTime, waveBars, audioPlayer } = player;
+        const waveSystem = this.waveSystems.get(audioId);
 
         // Función para formatear tiempo
         const formatTime = (seconds) => {
@@ -79,42 +178,14 @@ class AudioPlayerSystem {
             }
         };
 
-        // Animación de ondas mejorada
-        const updateWaveform = () => {
-            if (audio.paused || !waveBars.length) return;
-            
-            waveBars.forEach((bar, index) => {
-                const baseHeight = [8, 16, 24, 28, 24, 16, 12, 8][index] || 12;
-                const variation = Math.random() * 8;
-                const height = baseHeight + variation;
-                const opacity = 0.7 + Math.random() * 0.3;
-                
-                bar.style.height = `${height}px`;
-                bar.style.opacity = opacity;
-            });
-        };
-
-        // Iniciar animación de ondas
-        const startWaveAnimation = () => {
-            if (player.waveformInterval) {
-                clearInterval(player.waveformInterval);
+        // Inicializar analizador de audio cuando esté listo
+        const initAudioAnalyser = () => {
+            if (!waveSystem.initialized) {
+                waveSystem.initAnalyser(audio);
             }
-            player.waveformInterval = setInterval(updateWaveform, 120);
         };
 
-        // Detener animación de ondas
-        const stopWaveAnimation = () => {
-            if (player.waveformInterval) {
-                clearInterval(player.waveformInterval);
-                player.waveformInterval = null;
-            }
-            waveBars.forEach(bar => {
-                bar.style.height = '';
-                bar.style.opacity = '0.6';
-            });
-        };
-
-        // Toggle reproducción - CORREGIDO
+        // Toggle reproducción
         const togglePlay = () => {
             // Si este audio ya está reproduciéndose, pausarlo
             if (player.isPlaying) {
@@ -122,7 +193,7 @@ class AudioPlayerSystem {
                 player.isPlaying = false;
                 audioPlayer.classList.remove('playing');
                 playBtn.innerHTML = '<i class="fas fa-play"></i>';
-                stopWaveAnimation();
+                waveSystem.stopWaveform();
                 this.currentlyPlaying = null;
                 return;
             }
@@ -130,14 +201,19 @@ class AudioPlayerSystem {
             // Pausar cualquier audio que se esté reproduciendo
             if (this.currentlyPlaying && this.currentlyPlaying !== audioId) {
                 const previousPlayer = this.audioPlayers.get(this.currentlyPlaying);
-                if (previousPlayer) {
+                const previousWaveSystem = this.waveSystems.get(this.currentlyPlaying);
+                
+                if (previousPlayer && previousWaveSystem) {
                     previousPlayer.audio.pause();
                     previousPlayer.isPlaying = false;
                     previousPlayer.audioPlayer.classList.remove('playing');
                     previousPlayer.playBtn.innerHTML = '<i class="fas fa-play"></i>';
-                    stopWaveAnimation.call(previousPlayer);
+                    previousWaveSystem.stopWaveform();
                 }
             }
+
+            // Inicializar analizador si es necesario
+            initAudioAnalyser();
 
             // Reproducir este audio
             audio.play().then(() => {
@@ -145,7 +221,7 @@ class AudioPlayerSystem {
                 this.currentlyPlaying = audioId;
                 audioPlayer.classList.add('playing');
                 playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                startWaveAnimation();
+                waveSystem.updateWaveform(waveBars);
                 
                 // Disparar evento para estadísticas
                 document.dispatchEvent(new CustomEvent('audioPlay'));
@@ -163,6 +239,14 @@ class AudioPlayerSystem {
                 console.error('Error reproduciendo audio:', error);
                 playBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
                 playBtn.style.color = '#ff6b6b';
+                
+                // Track error en Analytics
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'audio_error', {
+                        event_category: 'media',
+                        event_label: error.message
+                    });
+                }
             });
         };
 
@@ -181,18 +265,22 @@ class AudioPlayerSystem {
             playBtn.innerHTML = '<i class="fas fa-play"></i>';
             if (progressBar) progressBar.style.width = '0%';
             if (audioTime) audioTime.textContent = '0:00';
-            stopWaveAnimation();
+            waveSystem.stopWaveform();
             this.currentlyPlaying = null;
         });
 
         audio.addEventListener('loadedmetadata', () => {
             if (audioTime) audioTime.textContent = '0:00';
+            initAudioAnalyser();
         });
+
+        audio.addEventListener('canplay', initAudioAnalyser);
 
         audio.addEventListener('error', (e) => {
             console.error(`Error en audio ${audioId}:`, e);
             playBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
             playBtn.style.color = '#ff6b6b';
+            audioPlayer.classList.add('error');
         });
     }
 
@@ -204,9 +292,11 @@ class AudioPlayerSystem {
             }
         });
 
-        // Pausar todos los audios al cambiar de sección
-        window.addEventListener('scroll', () => {
-            // Opcional: pausar al hacer scroll lejos del reproductor
+        // Manejar la visibilidad de la página para pausar audio
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.pauseAll();
+            }
         });
     }
 
@@ -218,18 +308,122 @@ class AudioPlayerSystem {
                 player.audioPlayer.classList.remove('playing');
                 player.playBtn.innerHTML = '<i class="fas fa-play"></i>';
                 
-                // Detener animación de ondas
-                if (player.waveformInterval) {
-                    clearInterval(player.waveformInterval);
-                    player.waveformInterval = null;
+                const waveSystem = this.waveSystems.get(audioId);
+                if (waveSystem) {
+                    waveSystem.stopWaveform();
                 }
-                player.waveBars.forEach(bar => {
-                    bar.style.height = '';
-                    bar.style.opacity = '0.6';
-                });
             }
         });
         this.currentlyPlaying = null;
+    }
+
+    // Método para limpiar recursos
+    destroy() {
+        this.pauseAll();
+        this.waveSystems.forEach(waveSystem => {
+            waveSystem.destroy();
+        });
+        this.waveSystems.clear();
+        this.audioPlayers.clear();
+    }
+}
+
+// ===== SISTEMA DE ONDAS INTERACTIVAS MEJORADO =====
+class InteractiveWaveSystem {
+    constructor() {
+        this.audioContext = null;
+        this.analyser = null;
+        this.dataArray = null;
+        this.animationFrame = null;
+        this.initialized = false;
+        this.isPlaying = false;
+    }
+
+    initAnalyser(audioElement) {
+        if (this.initialized) return;
+        
+        try {
+            // Crear contexto de audio
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Crear analizador
+            this.analyser = this.audioContext.createAnalyser();
+            this.analyser.fftSize = 256;
+            this.analyser.smoothingTimeConstant = 0.8;
+            
+            // Conectar el audio al analizador
+            const source = this.audioContext.createMediaElementSource(audioElement);
+            source.connect(this.analyser);
+            this.analyser.connect(this.audioContext.destination);
+            
+            // Preparar array para datos de frecuencia
+            const bufferLength = this.analyser.frequencyBinCount;
+            this.dataArray = new Uint8Array(bufferLength);
+            
+            this.initialized = true;
+            console.log('✅ Analizador de audio inicializado');
+            
+        } catch (error) {
+            console.error('❌ Error inicializando el analizador de audio:', error);
+            this.initialized = false;
+        }
+    }
+
+    updateWaveform(waveBars) {
+        if (!this.analyser || !this.initialized) return;
+
+        // Obtener datos de frecuencia
+        this.analyser.getByteFrequencyData(this.dataArray);
+        
+        // Dividir el espectro en bandas para las barras
+        const bandSize = Math.floor(this.dataArray.length / waveBars.length);
+        
+        waveBars.forEach((bar, index) => {
+            const start = index * bandSize;
+            let sum = 0;
+            
+            // Promediar los valores de frecuencia en esta banda
+            for (let i = 0; i < bandSize; i++) {
+                sum += this.dataArray[start + i];
+            }
+            
+            const average = sum / bandSize;
+            
+            // Convertir a altura (0-100%)
+            const height = Math.max(10, (average / 256) * 100);
+            
+            // Actualizar la barra
+            bar.style.height = `${height}%`;
+            bar.style.opacity = Math.max(0.4, Math.min(1, average / 150));
+            
+            // Efecto de color basado en la intensidad
+            const intensity = average / 256;
+            if (intensity > 0.8) {
+                bar.style.background = 'linear-gradient(180deg, #ffd700, #ff6b00)';
+            } else if (intensity > 0.6) {
+                bar.style.background = 'linear-gradient(180deg, var(--vibrant-gold), #ffa500)';
+            } else {
+                bar.style.background = 'linear-gradient(180deg, var(--rich-gold), var(--vibrant-gold))';
+            }
+        });
+
+        // Continuar la animación
+        this.animationFrame = requestAnimationFrame(() => this.updateWaveform(waveBars));
+    }
+
+    stopWaveform() {
+        if (this.animationFrame) {
+            cancelAnimationFrame(this.animationFrame);
+            this.animationFrame = null;
+        }
+    }
+
+    destroy() {
+        this.stopWaveform();
+        if (this.audioContext) {
+            this.audioContext.close();
+        }
+        this.initialized = false;
     }
 }
 
@@ -305,30 +499,36 @@ class ServiceWorkerManager {
     }
 }
 
-// ===== SISTEMA DE FORMULARIO CON BACKEND =====
+// ===== SISTEMA DE FORMULARIO CON BACKEND Y CSRF =====
 class FormHandler {
     constructor() {
-        this.csrfToken = null;
         this.init();
     }
 
     async init() {
-        await this.loadCSRFToken();
         this.setupFormHandlers();
+        this.setupCSRFProtection();
     }
 
-    async loadCSRFToken() {
-        try {
-            const response = await fetch('/form-handler.php?action=csrf_token');
-            const data = await response.json();
-            
-            if (data.success) {
-                this.csrfToken = data.data.csrf_token;
-                console.log('✅ Token CSRF cargado');
+    setupCSRFProtection() {
+        // Inyectar token CSRF en todos los formularios
+        document.addEventListener('DOMContentLoaded', () => {
+            this.injectCSRFTokens();
+        });
+    }
+
+    injectCSRFTokens() {
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            const existingToken = form.querySelector('input[name="csrf_token"]');
+            if (!existingToken) {
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = 'csrf_token';
+                tokenInput.value = window.csrfTokenManager.getToken();
+                form.appendChild(tokenInput);
             }
-        } catch (error) {
-            console.error('Error cargando token CSRF:', error);
-        }
+        });
     }
 
     setupFormHandlers() {
@@ -358,6 +558,40 @@ class FormHandler {
                 this.openContactModal();
             }
         });
+
+        // Contador de caracteres para textareas
+        this.setupCharacterCounters();
+    }
+
+    setupCharacterCounters() {
+        const textareas = document.querySelectorAll('textarea[maxlength]');
+        textareas.forEach(textarea => {
+            const maxLength = parseInt(textarea.getAttribute('maxlength'));
+            const counter = document.createElement('div');
+            counter.className = 'char-counter';
+            counter.style.cssText = `
+                text-align: right;
+                font-size: 0.8rem;
+                color: #b0b0b0;
+                margin-top: 5px;
+            `;
+            counter.textContent = `0/${maxLength}`;
+            
+            textarea.parentNode.appendChild(counter);
+            
+            textarea.addEventListener('input', (e) => {
+                const length = e.target.value.length;
+                counter.textContent = `${length}/${maxLength}`;
+                
+                if (length > maxLength * 0.9) {
+                    counter.style.color = '#ff6b6b';
+                } else if (length > maxLength * 0.75) {
+                    counter.style.color = '#ffa500';
+                } else {
+                    counter.style.color = '#b0b0b0';
+                }
+            });
+        });
     }
 
     async handleContactForm(form) {
@@ -365,20 +599,24 @@ class FormHandler {
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
 
+        // Validar token CSRF
+        const csrfToken = formData.get('csrf_token');
+        if (!window.csrfTokenManager.validateToken(csrfToken)) {
+            this.showNotification('❌ Error de seguridad. Por favor, recarga la página.', 'error');
+            return;
+        }
+
         // Mostrar loading
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
         submitBtn.disabled = true;
 
         try {
-            // Agregar token CSRF
-            if (this.csrfToken) {
-                formData.append('csrf_token', this.csrfToken);
-            }
-            formData.append('form_type', 'contact');
-
             const response = await fetch('/form-handler.php', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                headers: {
+                    'X-CSRF-Token': csrfToken
+                }
             });
 
             const data = await response.json();
@@ -406,6 +644,9 @@ class FormHandler {
                 this.closeModal();
                 form.reset();
 
+                // Regenerar token CSRF
+                window.csrfTokenManager.generateCSRFToken();
+
             } else {
                 this.showNotification('❌ Error: ' + data.message, 'error');
                 console.error('Error del servidor:', data);
@@ -428,18 +669,23 @@ class FormHandler {
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
 
+        // Validar token CSRF
+        const csrfToken = formData.get('csrf_token');
+        if (!window.csrfTokenManager.validateToken(csrfToken)) {
+            this.showNotification('❌ Error de seguridad. Por favor, recarga la página.', 'error');
+            return;
+        }
+
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
         submitBtn.disabled = true;
 
         try {
-            if (this.csrfToken) {
-                formData.append('csrf_token', this.csrfToken);
-            }
-            formData.append('form_type', 'feedback');
-
             const response = await fetch('/form-handler.php', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                headers: {
+                    'X-CSRF-Token': csrfToken
+                }
             });
 
             const data = await response.json();
@@ -456,6 +702,9 @@ class FormHandler {
 
                 form.reset();
                 this.closeFeedbackModal();
+
+                // Regenerar token CSRF
+                window.csrfTokenManager.generateCSRFToken();
 
             } else {
                 this.showNotification('❌ Error: ' + data.message, 'error');
@@ -505,6 +754,9 @@ Este mensaje fue enviado desde el formulario de contacto de ODAM Producción Mus
         if (modal) {
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
+            
+            // Inyectar token CSRF fresco
+            this.injectCSRFTokens();
             
             // Track en Analytics
             if (typeof gtag !== 'undefined') {
@@ -747,6 +999,7 @@ class PWAManager {
         this.setupInstallPrompt();
         this.setupBeforeInstallPrompt();
         this.checkStandaloneMode();
+        this.setupAppBadge();
     }
 
     setupBeforeInstallPrompt() {
@@ -786,6 +1039,27 @@ class PWAManager {
         document.body.appendChild(installButton);
     }
 
+    setupAppBadge() {
+        const appBadge = document.querySelector('.pwa-badge');
+        if (appBadge) {
+            appBadge.style.cursor = 'pointer';
+            appBadge.setAttribute('title', 'Haz clic para instalar la app');
+            appBadge.addEventListener('click', () => {
+                this.promptInstallation();
+            });
+            
+            // Agregar efectos hover
+            appBadge.addEventListener('mouseenter', () => {
+                appBadge.style.transform = 'scale(1.05)';
+                appBadge.style.transition = 'transform 0.2s ease';
+            });
+            
+            appBadge.addEventListener('mouseleave', () => {
+                appBadge.style.transform = 'scale(1)';
+            });
+        }
+    }
+
     showInstallPromotion() {
         const installButton = document.getElementById('pwa-install-button');
         if (installButton && this.deferredPrompt) {
@@ -796,29 +1070,48 @@ class PWAManager {
                 installButton.style.display = 'none';
             }, 10000);
         }
+
+        // También mostrar el badge como interactivo
+        const appBadge = document.querySelector('.pwa-badge');
+        if (appBadge && this.deferredPrompt) {
+            appBadge.style.display = 'inline-block';
+        }
     }
 
     async promptInstallation() {
-        if (!this.deferredPrompt) return;
-
-        this.deferredPrompt.prompt();
-        const { outcome } = await this.deferredPrompt.userChoice;
-        
-        console.log(`✅ PWA - User response to install prompt: ${outcome}`);
-        
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'pwa_install_prompt', {
-                event_category: 'pwa',
-                event_label: outcome
-            });
+        if (!this.deferredPrompt) {
+            this.showNotification('⚠️ La instalación no está disponible en este momento.', 'warning');
+            return;
         }
 
-        this.deferredPrompt = null;
-        
-        // Ocultar botón de instalación
-        const installButton = document.getElementById('pwa-install-button');
-        if (installButton) {
-            installButton.style.display = 'none';
+        try {
+            this.deferredPrompt.prompt();
+            const { outcome } = await this.deferredPrompt.userChoice;
+            
+            console.log(`✅ PWA - User response to install prompt: ${outcome}`);
+            
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'pwa_install_prompt', {
+                    event_category: 'pwa',
+                    event_label: outcome
+                });
+            }
+
+            if (outcome === 'accepted') {
+                this.showNotification('✅ App instalada correctamente', 'success');
+            }
+
+            this.deferredPrompt = null;
+            
+            // Ocultar botón de instalación
+            const installButton = document.getElementById('pwa-install-button');
+            if (installButton) {
+                installButton.style.display = 'none';
+            }
+
+        } catch (error) {
+            console.error('Error durante la instalación PWA:', error);
+            this.showNotification('❌ Error durante la instalación', 'error');
         }
     }
 
@@ -834,6 +1127,11 @@ class PWAManager {
                 });
             }
         }
+    }
+
+    showNotification(message, type = 'info') {
+        // Implementación simple de notificación
+        console.log(`${type.toUpperCase()}: ${message}`);
     }
 }
 
