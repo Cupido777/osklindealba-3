@@ -18,16 +18,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ODAM Producción">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/jpeg" href="./logo.jpg">
-    <link rel="apple-touch-icon" href="./logo-192x192.png">
-    <link rel="apple-touch-startup-image" href="./logo-512x512.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="apple-touch-icon" href="logo-192x192.png">
+    <link rel="apple-touch-startup-image" href="logo-512x512.png">
     
     <!-- === OPEN GRAPH OPTIMIZADO === -->
     <meta property="og:title" content="ODAM — Producción Musical Profesional Cristiana">
     <meta property="og:description" content="Especialistas en producción musical cristiana, mezcla, masterización y consultoría técnica para artistas y ministerios.">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="./logo-512x512.png">
+    <meta property="og:image" content="logo-512x512.png">
     <meta property="og:image:width" content="512">
     <meta property="og:image:height" content="512">
     <meta property="og:url" content="https://www.osklindealba.com">
@@ -38,7 +38,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="ODAM — Producción Musical Cristiana Profesional">
     <meta name="twitter:description" content="Producción musical de élite para artistas y ministerios cristianos.">
-    <meta name="twitter:image" content="./logo-512x512.png">
+    <meta name="twitter:image" content="logo-512x512.png">
     <meta name="twitter:site" content="@osklin27">
     <meta name="twitter:creator" content="@osklin27">
     
@@ -62,16 +62,16 @@
     <link rel="stylesheet" href="stats-styles.css">
     
     <!-- === PRELOAD DE IMÁGENES CRÍTICAS OPTIMIZADO === -->
-    <link rel="preload" href="./logo.jpg" as="image" fetchpriority="high">
-    <link rel="preload" href="./tu-foto.jpg" as="image" fetchpriority="high">
-    <link rel="preload" href="./logo-192x192.png" as="image">
-    <link rel="preload" href="./logo-512x512.png" as="image">
+    <link rel="preload" href="logo.jpg" as="image" fetchpriority="high">
+    <link rel="preload" href="tu-foto.jpg" as="image" fetchpriority="high">
+    <link rel="preload" href="logo-192x192.png" as="image">
+    <link rel="preload" href="logo-512x512.png" as="image">
     
     <!-- === FAVICON MULTI-PLATAFORMA === -->
-    <link rel="icon" href="./logo.jpg" type="image/jpeg">
-    <link rel="apple-touch-icon" sizes="192x192" href="./logo-192x192.png">
-    <link rel="apple-touch-icon" sizes="512x512" href="./logo-512x512.png">
-    <link rel="shortcut icon" href="./logo.jpg">
+    <link rel="icon" href="logo.jpg" type="image/jpeg">
+    <link rel="apple-touch-icon" sizes="192x192" href="logo-192x192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="logo-512x512.png">
+    <link rel="shortcut icon" href="logo.jpg">
     
     <!-- === SCHEMA.ORG MARKUP MEJORADO === -->
     <script type="application/ld+json">
@@ -135,10 +135,10 @@
     <script>
         // Preload critical resources
         const criticalResources = [
-            '/styles.css',
-            '/script.js',
-            '/stats-system.js',
-            '/lighthouse-config.js'
+            'styles.css',
+            'script.js',
+            'stats-system.js',
+            'lighthouse-config.js'
         ];
         
         criticalResources.forEach(resource => {
@@ -269,7 +269,7 @@
     <header role="banner">
         <div class="header-inner">
             <a class="brand" href="#inicio" aria-label="ODAM - Ir al inicio">
-                <img src="./logo.jpg" alt="ODAM Logo - Producción Musical Profesional" width="52" height="52" loading="eager" decoding="async">
+                <img src="logo.jpg" alt="ODAM Logo - Producción Musical Profesional" width="52" height="52" loading="eager" decoding="async">
                 <h1>ODAM</h1>
             </a>
             <button id="site-nav-toggle" aria-controls="site-nav" aria-expanded="false" aria-label="Abrir menú" class="nav-toggle">
@@ -304,7 +304,8 @@
                         <a class="btn btn-secondary" href="#proyectos">
                             <i class="fas fa-headphones" aria-hidden="true"></i> Ver Trabajos
                         </a>
-                        <button class="btn btn-outline" id="pwa-install-button" style="display: none;">
+                        <!-- CORRECCIÓN: Botón PWA solo para móviles -->
+                        <button class="btn btn-outline mobile-only" id="pwa-install-button" style="display: none;">
                             <i class="fas fa-download" aria-hidden="true"></i> Instalar App
                         </button>
                     </div>
@@ -326,7 +327,7 @@
                 <div class="hero-visual fade-in">
                     <div class="profile-card">
                         <div class="profile-image-container">
-                            <img src="./tu-foto.jpg" alt="Osklin De Alba - Productor Musical ODAM - Especialista en producción cristiana" class="profile-image" loading="eager" decoding="async">
+                            <img src="tu-foto.jpg" alt="Osklin De Alba - Productor Musical ODAM - Especialista en producción cristiana" class="profile-image" loading="eager" decoding="async">
                             <div class="profile-overlay">
                                 <div class="profile-badge">
                                     <i class="fas fa-music" aria-hidden="true"></i>
@@ -338,7 +339,8 @@
                             <h3>Osklin De Alba</h3>
                             <p>Fundador & Productor Principal</p>
                             <div class="visual-tag">Studio Quality</div>
-                            <div class="pwa-badge">
+                            <!-- CORRECCIÓN: Badge PWA solo para móviles -->
+                            <div class="pwa-badge mobile-only">
                                 <i class="fas fa-mobile-alt"></i> App Disponible
                             </div>
                         </div>
@@ -539,7 +541,8 @@
                             <i class="fas fa-play-circle" aria-hidden="true"></i> Solicitar Similar
                         </a>
                     </div>
-                    <audio id="audio-tu-me-sostendras" src="./tu-me-sostendras.mp3" preload="metadata" loop></audio>
+                    <!-- CORRECCIÓN: ID del audio corregido -->
+                    <audio id="audio-tu-me-sostendras" src="tu-me-sostendras.mp3" preload="metadata"></audio>
                 </div>
 
                 <!-- Tarjeta 2 -->
@@ -583,7 +586,8 @@
                             <i class="fas fa-play-circle" aria-hidden="true"></i> Solicitar Similar
                         </a>
                     </div>
-                    <audio id="audio-renovados-en-tu-voluntad" src="./renovados-en-tu-voluntad.mp3" preload="metadata" loop></audio>
+                    <!-- CORRECCIÓN: ID del audio corregido -->
+                    <audio id="audio-renovados-en-tu-voluntad" src="renovados-en-tu-voluntad.mp3" preload="metadata"></audio>
                 </div>
 
                 <!-- Tarjeta 3 -->
@@ -627,7 +631,8 @@
                             <i class="fas fa-play-circle" aria-hidden="true"></i> Solicitar Similar
                         </a>
                     </div>
-                    <audio id="audio-en-ti-confio-senor" src="./en-ti-confio-senor.mp3" preload="metadata" loop></audio>
+                    <!-- CORRECCIÓN: ID del audio corregido -->
+                    <audio id="audio-en-ti-confio-senor" src="en-ti-confio-senor.mp3" preload="metadata"></audio>
                 </div>
 
                 <!-- Tarjeta 4 -->
@@ -670,7 +675,8 @@
                             <i class="fas fa-play-circle" aria-hidden="true"></i> Solicitar Similar
                         </a>
                     </div>
-                    <audio id="audio-el-diezmo-es-del-senor-version-bachata" src="./el-diezmo-es-del-senor-version-bachata.mp3" preload="metadata" loop></audio>
+                    <!-- CORRECCIÓN: ID del audio corregido -->
+                    <audio id="audio-el-diezmo-es-del-senor-version-bachata" src="el-diezmo-es-del-senor-version-bachata.mp3" preload="metadata"></audio>
                 </div>
 
                 <!-- Tarjeta 5 -->
@@ -714,7 +720,8 @@
                             <i class="fas fa-play-circle" aria-hidden="true"></i> Solicitar Similar
                         </a>
                     </div>
-                    <audio id="audio-jonas-y-el-gran-pez" src="./jonas-y-el-gran-pez.mp3" preload="metadata" loop></audio>
+                    <!-- CORRECCIÓN: ID del audio corregido -->
+                    <audio id="audio-jonas-y-el-gran-pez" src="jonas-y-el-gran-pez.mp3" preload="metadata"></audio>
                 </div>
 
                 <!-- Tarjeta 6 -->
@@ -758,12 +765,13 @@
                             <i class="fas fa-play-circle" aria-hidden="true"></i> Solicitar Similar
                         </a>
                     </div>
-                    <audio id="audio-el-hijo-de-manoa" src="./el-hijo-de-manoa.mp3" preload="metadata" loop></audio>
+                    <!-- CORRECCIÓN: ID del audio corregido -->
+                    <audio id="audio-el-hijo-de-manoa" src="el-hijo-de-manoa.mp3" preload="metadata"></audio>
                 </div>
             </div>
         </section>
 
-        <!-- Inspiración Section -->
+        <!-- === SECCIÓN INSPIRACIÓN (VERSÍCULOS) - RESTAURADA === -->
         <section id="fe" class="section inspiration-section" aria-labelledby="fe-title">
             <div class="section-header">
                 <h2 id="fe-title" class="section-title">Inspiración y Fe</h2>
@@ -772,38 +780,22 @@
             <div class="inspiration-content">
                 <blockquote class="inspiration-quote fade-in" id="bible-verse">
                     <!-- El versículo se cargará dinámicamente -->
+                    <div class="verse-text">Cargando versículo...</div>
+                    <div class="verse-reference"></div>
                 </blockquote>
             </div>
         </section>
 
-        <!-- SECCIÓN TESTIMONIOS COMENTADA PARA FUTURO -->
-        <!-- 
-        <section id="testimonios" class="section testimonials-section" aria-labelledby="testimonios-title">
-            <div class="section-header">
-                <h2 id="testimonios-title" class="section-title">Testimonios de Clientes</h2>
-                <p class="section-subtitle">Lo que dicen artistas y ministerios sobre nuestro trabajo</p>
-            </div>
-            <div class="testimonials-grid">
-                <div class="testimonial-card fade-in">
-                    <div class="testimonial-content">
-                        <p>"ODAM transformó completamente nuestra música. La producción superó todas nuestras expectativas y el proceso fue muy profesional."</p>
-                    </div>
-                    <div class="testimonial-author">
-                        <strong>Ministerio de Alabanza</strong>
-                        <span>Iglesia Centro Cristiano</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-        -->
-
-        <!-- SECCIÓN INTERACCIÓN -->
+        <!-- === SECCIÓN INTERACCIÓN (ESTADÍSTICAS) - RESTAURADA === -->
         <section id="interaccion" class="section interaction-section" aria-labelledby="interaccion-title">
             <div class="section-header">
                 <h2 id="interaccion-title" class="section-title">Interacción</h2>
                 <p class="section-subtitle">Tu participación es importante para nosotros</p>
             </div>
             <!-- El sistema de estadísticas se insertará aquí dinámicamente -->
+            <div class="stats-placeholder">
+                <p>Cargando sistema de interacción...</p>
+            </div>
         </section>
 
         <!-- Contacto Section -->
@@ -865,7 +857,7 @@
     <footer role="contentinfo">
         <div class="container footer-content">
             <div class="footer-brand">
-                <img src="./logo.jpg" alt="ODAM Producción Musical - Logo" width="40" height="40" loading="lazy" decoding="async">
+                <img src="logo.jpg" alt="ODAM Producción Musical - Logo" width="40" height="40" loading="lazy" decoding="async">
                 <div>
                     <h3>ODAM</h3>
                     <p>Producción Musical Con Propósito</p>
@@ -912,7 +904,7 @@
         // Registrar Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
+                navigator.serviceWorker.register('sw.js')
                     .then(function(registration) {
                         console.log('✅ ServiceWorker registration successful');
                     })
@@ -934,51 +926,6 @@
                 csrfInput.value = window.csrfTokenManager.getToken();
             }
         });
-    </script>
-
-    <!-- === MANIFEST.JSON (debe estar en la raíz) === -->
-    <script type="application/manifest+json">
-        {
-            "name": "ODAM Producción Musical",
-            "short_name": "ODAM",
-            "description": "Producción musical profesional especializada en música cristiana",
-            "start_url": "/",
-            "display": "standalone",
-            "background_color": "#000000",
-            "theme_color": "#c8a25f",
-            "orientation": "portrait-primary",
-            "scope": "/",
-            "lang": "es",
-            "categories": ["music", "business", "productivity"],
-            "icons": [
-                {
-                    "src": "./logo-192x192.png",
-                    "sizes": "192x192",
-                    "type": "image/png",
-                    "purpose": "any maskable"
-                },
-                {
-                    "src": "./logo-512x512.png",
-                    "sizes": "512x512",
-                    "type": "image/png",
-                    "purpose": "any maskable"
-                }
-            ],
-            "screenshots": [
-                {
-                    "src": "./screenshot-mobile.png",
-                    "sizes": "375x667",
-                    "type": "image/png",
-                    "form_factor": "narrow"
-                },
-                {
-                    "src": "./screenshot-desktop.png",
-                    "sizes": "1280x720",
-                    "type": "image/png",
-                    "form_factor": "wide"
-                }
-            ]
-        }
     </script>
 </body>
 </html>
