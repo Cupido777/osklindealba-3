@@ -1,15 +1,18 @@
-// stats-system.js - SISTEMA DE ESTADÍSTICAS DISCRETO MEJORADO CON ANALYTICS
+// stats-system.js - SISTEMA DE ESTADÍSTICAS DISCRETO MEJORADO CON ANALYTICS Y CSRF
 class StatsSystem {
     constructor() {
         this.stats = this.loadStats();
         this.rating = this.loadRating();
         this.restrictedWords = this.getRestrictedWords();
         this.analyticsEnabled = false;
-        this.containerCreated = false; // 👈 NUEVO: Control de duplicados
+        this.containerCreated = false;
+        this.csrfToken = null;
         this.init();
     }
 
-    init() {
+    async init() {
+        await this.loadCSRFToken();
+        
         // 👇 VERIFICAR SI EL CONTENEDOR YA EXISTE ANTES DE CREARLO
         if (!this.containerCreated && !document.querySelector('.stats-system-container')) {
             this.createStatsContainer();
@@ -19,7 +22,47 @@ class StatsSystem {
         this.initStatsTracking();
         this.initAnalytics();
         this.updateDisplay();
-        console.log('📊 Sistema de estadísticas ODAM inicializado con Analytics');
+        console.log('📊 Sistema de estadísticas ODAM inicializado con Analytics y CSRF');
+    }
+
+    // ===== SISTEMA CSRF MEJORADO =====
+    async loadCSRFToken() {
+        try {
+            // Intentar obtener el token del manager global
+            if (window.csrfTokenManager) {
+                this.csrfToken = window.csrfTokenManager.getToken();
+                console.log('✅ Token CSRF cargado desde manager global');
+                return;
+            }
+            
+            // Fallback: generar token local
+            const randomBytes = new Uint8Array(32);
+            crypto.getRandomValues(randomBytes);
+            this.csrfToken = Array.from(randomBytes, byte => 
+                byte.toString(16).padStart(2, '0')
+            ).join('');
+            
+            console.log('✅ Token CSRF generado localmente');
+            
+        } catch (error) {
+            console.error('❌ Error cargando token CSRF:', error);
+            // Fallback extremo
+            this.csrfToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
+        }
+    }
+
+    validateCSRFToken(token) {
+        if (!this.csrfToken) {
+            console.warn('⚠️ Token CSRF no disponible');
+            return false;
+        }
+        
+        const isValid = token === this.csrfToken;
+        if (!isValid) {
+            console.warn('⚠️ Token CSRF inválido');
+        }
+        
+        return isValid;
     }
 
     // 👇 MÉTODO PARA ELIMINAR DUPLICADOS SI EXISTEN
@@ -43,16 +86,18 @@ class StatsSystem {
 
     // ===== INTEGRACIÓN GOOGLE ANALYTICS 4 =====
     initAnalytics() {
-        // Inyectar Google Analytics 4
-        const gaScript = document.createElement('script');
-        gaScript.async = true;
-        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX';
-        document.head.appendChild(gaScript);
+        // Inyectar Google Analytics 4 solo si no existe
+        if (!document.querySelector('script[src*="googletagmanager.com"]')) {
+            const gaScript = document.createElement('script');
+            gaScript.async = true;
+            gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX';
+            document.head.appendChild(gaScript);
 
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-XXXXXXXXXX');
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-XXXXXXXXXX');
+        }
 
         this.analyticsEnabled = true;
         this.trackEvent('page_view', 'stats_system_loaded');
@@ -114,9 +159,11 @@ class StatsSystem {
                 servicesExplored: 0,
                 audioPlays: 0,
                 formSubmissions: 0,
-                ratingsGiven: 0
+                ratingsGiven: 0,
+                feedbackSubmitted: 0
             };
         } catch (e) {
+            console.error('Error cargando estadísticas:', e);
             return this.getDefaultStats();
         }
     }
@@ -128,9 +175,11 @@ class StatsSystem {
                 likes: 0,
                 dislikes: 0,
                 userVote: null,
-                totalVotes: 0
+                totalVotes: 0,
+                lastVote: null
             };
         } catch (e) {
+            console.error('Error cargando rating:', e);
             return this.getDefaultRating();
         }
     }
@@ -146,7 +195,8 @@ class StatsSystem {
             servicesExplored: 0,
             audioPlays: 0,
             formSubmissions: 0,
-            ratingsGiven: 0
+            ratingsGiven: 0,
+            feedbackSubmitted: 0
         };
     }
 
@@ -155,7 +205,8 @@ class StatsSystem {
             likes: 0, 
             dislikes: 0, 
             userVote: null,
-            totalVotes: 0
+            totalVotes: 0,
+            lastVote: null
         };
     }
 
@@ -185,6 +236,7 @@ class StatsSystem {
 
     saveRating() {
         try {
+            this.rating.lastVote = new Date().toISOString();
             localStorage.setItem('odam-rating', JSON.stringify(this.rating));
             
             // Track en Analytics
@@ -326,23 +378,35 @@ class StatsSystem {
     }
 
     rate(voteType) {
+        // Validar que el voto sea válido
+        if (!['like', 'dislike'].includes(voteType)) {
+            console.error('Tipo de voto inválido:', voteType);
+            return;
+        }
+
+        // Verificar si el usuario ya votó
         if (this.rating.userVote === voteType) {
+            // Quitar voto existente
             if (voteType === 'like') this.rating.likes--;
             else this.rating.dislikes--;
             this.rating.userVote = null;
         } else {
+            // Remover voto anterior si existe
             if (this.rating.userVote === 'like') this.rating.likes--;
             else if (this.rating.userVote === 'dislike') this.rating.dislikes--;
             
+            // Agregar nuevo voto
             if (voteType === 'like') this.rating.likes++;
             else this.rating.dislikes++;
             this.rating.userVote = voteType;
 
+            // Si es dislike, abrir modal de feedback después de un delay
             if (voteType === 'dislike') {
                 setTimeout(() => this.openFeedbackModal(), 500);
             }
         }
         
+        // Actualizar estadísticas
         this.rating.totalVotes = this.rating.likes + this.rating.dislikes;
         this.stats.ratingsGiven++;
         this.saveRating();
@@ -359,7 +423,11 @@ class StatsSystem {
             'amenaza', 'violencia', 'odio', 'daño', 'atacar',
             'acoso', 'difamacion', 'humillacion', 'abusivo',
             'estafa', 'phishing', 'correo no deseado', 'spam',
-            'promoción', 'marketing', 'publicidad'
+            'promoción', 'marketing', 'publicidad',
+            // Patrones maliciosos
+            'javascript:', 'onclick', 'onload', 'onerror',
+            '<script', '</script>', 'eval(', 'document.cookie',
+            'window.location', 'alert(', 'prompt(', 'confirm('
         ];
     }
 
@@ -460,10 +528,13 @@ class StatsSystem {
                         <button class="feedback-modal-close" aria-label="Cerrar">&times;</button>
                     </div>
                     <form id="feedback-form" class="feedback-form">
+                        <input type="hidden" name="csrf_token" value="${this.csrfToken}">
+                        <input type="hidden" name="form_type" value="feedback">
                         <div class="form-group">
                             <label for="feedback-comment">Tu feedback es importante para nosotros:</label>
                             <textarea 
                                 id="feedback-comment" 
+                                name="comment"
                                 placeholder="Por favor, comparte tus sugerencias de manera respetuosa y constructiva..." 
                                 required
                                 maxlength="500"
@@ -502,10 +573,24 @@ class StatsSystem {
         const textarea = document.getElementById('feedback-comment');
         const charCount = document.getElementById('char-count');
 
-        textarea.addEventListener('input', (e) => {
-            charCount.textContent = e.target.value.length;
-        });
+        // Contador de caracteres
+        if (textarea && charCount) {
+            textarea.addEventListener('input', (e) => {
+                const length = e.target.value.length;
+                charCount.textContent = length;
+                
+                // Cambiar color según el límite
+                if (length > 450) {
+                    charCount.style.color = '#ff6b6b';
+                } else if (length > 400) {
+                    charCount.style.color = '#ffa500';
+                } else {
+                    charCount.style.color = '#b0b0b0';
+                }
+            });
+        }
 
+        // Event listeners para cerrar modal
         closeBtns.forEach(btn => {
             btn.addEventListener('click', () => this.closeFeedbackModal());
         });
@@ -516,11 +601,13 @@ class StatsSystem {
             }
         });
 
+        // Envío del formulario
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             this.submitFeedback();
         });
 
+        // Cerrar con ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && modal.classList.contains('active')) {
                 this.closeFeedbackModal();
@@ -531,6 +618,31 @@ class StatsSystem {
     validateComment(comment) {
         const commentLower = comment.toLowerCase();
         
+        // Validación mejorada con patrones maliciosos
+        const maliciousPatterns = [
+            /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, // Script tags
+            /javascript:/gi, // JavaScript protocol
+            /on\w+\s*=/gi, // Event handlers
+            /expression\s*\(/gi, // CSS expressions
+            /vbscript:/gi, // VBScript
+            /<\w+(\s+(\w|\w[\w-]*\w)(\s*=\s*(?:"[^"]*"|'[^']*'|[^'">\s]+))?)+\s*\/?>\s*<\/\w+>/gi, // HTML tags
+            /(http|https):\/\/[^\s]+/g, // URLs
+            /\b[\w\.-]+@[\w\.-]+\.\w+\b/g, // Emails
+            /(\b)(admin|root|system)(\b)/gi // Términos sensibles
+        ];
+        
+        const hasMaliciousPattern = maliciousPatterns.some(pattern => 
+            pattern.test(comment)
+        );
+
+        if (hasMaliciousPattern) {
+            return {
+                isValid: false,
+                message: 'El comentario contiene patrones de seguridad no permitidos.'
+            };
+        }
+        
+        // Validación de palabras restringidas
         const hasRestrictedWord = this.restrictedWords.some(word => 
             commentLower.includes(word.toLowerCase())
         );
@@ -538,34 +650,60 @@ class StatsSystem {
         if (hasRestrictedWord) {
             return {
                 isValid: false,
-                message: 'El comentario contiene palabras no permitidas.'
+                message: 'El comentario contiene palabras no permitidas. Por favor, expresa tus ideas de manera respetuosa.'
             };
         }
 
         if (comment.trim().length < 10) {
             return {
                 isValid: false,
-                message: 'Por favor, escribe al menos 10 caracteres.'
+                message: 'Por favor, escribe al menos 10 caracteres para que tu comentario sea útil.'
+            };
+        }
+
+        if (comment.trim().length > 500) {
+            return {
+                isValid: false,
+                message: 'El comentario no puede exceder los 500 caracteres.'
             };
         }
 
         if (!comment.replace(/\s/g, '').length) {
             return {
                 isValid: false,
-                message: 'El comentario no puede contener solo espacios.'
+                message: 'El comentario no puede contener solo espacios en blanco.'
+            };
+        }
+
+        // Verificar contenido repetitivo
+        const words = comment.trim().split(/\s+/);
+        const uniqueWords = new Set(words);
+        if (uniqueWords.size < 3) {
+            return {
+                isValid: false,
+                message: 'Por favor, escribe un comentario más descriptivo con al menos 3 palabras diferentes.'
             };
         }
 
         return { isValid: true };
     }
 
-    submitFeedback() {
+    async submitFeedback() {
         const comment = document.getElementById('feedback-comment').value.trim();
         const errorElement = document.getElementById('feedback-error');
         const successElement = document.getElementById('feedback-success');
+        const form = document.getElementById('feedback-form');
+        const csrfToken = form.querySelector('input[name="csrf_token"]').value;
 
         errorElement.style.display = 'none';
         successElement.style.display = 'none';
+
+        // Validar token CSRF
+        if (!this.validateCSRFToken(csrfToken)) {
+            errorElement.textContent = 'Error de seguridad. Por favor, recarga la página e intenta nuevamente.';
+            errorElement.style.display = 'block';
+            return;
+        }
 
         const validation = this.validateComment(comment);
         if (!validation.isValid) {
@@ -574,17 +712,65 @@ class StatsSystem {
             return;
         }
 
-        this.saveFeedback(comment);
+        try {
+            // Intentar enviar al servidor si está disponible
+            await this.sendFeedbackToServer(comment, csrfToken);
+            
+            // Guardar localmente como respaldo
+            this.saveFeedback(comment);
+            
+            successElement.style.display = 'block';
+            this.stats.feedbackSubmitted++;
+            this.saveStats();
+            
+            // Track en Analytics
+            this.trackEvent('feedback_submit', 'user_engagement', 'user_feedback', this.stats.feedbackSubmitted);
+            
+            setTimeout(() => {
+                this.closeFeedbackModal();
+                successElement.style.display = 'none';
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Error enviando feedback:', error);
+            // Fallback a almacenamiento local
+            this.saveFeedback(comment);
+            successElement.style.display = 'block';
+            
+            setTimeout(() => {
+                this.closeFeedbackModal();
+                successElement.style.display = 'none';
+            }, 2000);
+        }
+    }
+
+    async sendFeedbackToServer(comment, csrfToken) {
+        const formData = new FormData();
+        formData.append('comment', comment);
+        formData.append('csrf_token', csrfToken);
+        formData.append('form_type', 'feedback');
+        formData.append('timestamp', new Date().toISOString());
+        formData.append('user_agent', navigator.userAgent);
+
+        const response = await fetch('/form-handler.php', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
         
-        successElement.style.display = 'block';
-        
-        // Track en Analytics
-        this.trackEvent('feedback_submit', 'user_engagement', 'user_feedback');
-        
-        setTimeout(() => {
-            this.closeFeedbackModal();
-            successElement.style.display = 'none';
-        }, 2000);
+        if (!data.success) {
+            throw new Error(data.message || 'Error del servidor');
+        }
+
+        return data;
     }
 
     saveFeedback(comment) {
@@ -594,12 +780,15 @@ class StatsSystem {
                 comment: comment,
                 timestamp: new Date().toISOString(),
                 type: 'feedback',
-                rating: this.rating.userVote
+                rating: this.rating.userVote,
+                userAgent: navigator.userAgent.substring(0, 100)
             });
-            localStorage.setItem('odam-feedback', JSON.stringify(feedbacks));
             
-            this.stats.clicks += 5;
-            this.saveStats();
+            // Mantener solo los últimos 50 comentarios
+            const trimmedFeedbacks = feedbacks.slice(-50);
+            localStorage.setItem('odam-feedback', JSON.stringify(trimmedFeedbacks));
+            
+            console.log('✅ Feedback guardado localmente');
         } catch (e) {
             console.error('Error guardando feedback:', e);
         }
@@ -612,6 +801,14 @@ class StatsSystem {
         if (modal) {
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
+            
+            // Regenerar token CSRF para este formulario
+            this.loadCSRFToken().then(() => {
+                const csrfInput = modal.querySelector('input[name="csrf_token"]');
+                if (csrfInput) {
+                    csrfInput.value = this.csrfToken;
+                }
+            });
             
             // Track en Analytics
             this.trackEvent('modal_open', 'user_interaction', 'feedback_modal');
@@ -627,6 +824,7 @@ class StatsSystem {
         const form = document.getElementById('feedback-form');
         const errorElement = document.getElementById('feedback-error');
         const successElement = document.getElementById('feedback-success');
+        const charCount = document.getElementById('char-count');
         
         if (modal) {
             modal.classList.remove('active');
@@ -635,7 +833,6 @@ class StatsSystem {
         
         if (form) {
             form.reset();
-            const charCount = document.getElementById('char-count');
             if (charCount) charCount.textContent = '0';
         }
         
@@ -691,9 +888,11 @@ class StatsSystem {
         const clickScore = Math.min((Number(this.stats.clicks) || 0) * 3, 100);
         const projectScore = Math.min(((Number(this.stats.projectsViewed) || 0) + (Number(this.stats.audioPlays) || 0)) * 10, 100);
         const serviceScore = Math.min((Number(this.stats.servicesExplored) || 0) * 15, 100);
+        const feedbackScore = Math.min((Number(this.stats.feedbackSubmitted) || 0) * 20, 100);
+        const ratingScore = Math.min((Number(this.stats.ratingsGiven) || 0) * 25, 100);
         
         // Calcular score evitando NaN
-        const totalScore = (scrollScore + timeScore + clickScore + projectScore + serviceScore) / 5;
+        const totalScore = (scrollScore + timeScore + clickScore + projectScore + serviceScore + feedbackScore + ratingScore) / 7;
         const finalScore = Math.round(Math.max(0, Math.min(100, totalScore)));
         
         return isNaN(finalScore) ? 0 : finalScore;
@@ -753,14 +952,37 @@ class StatsSystem {
         this.stats = this.getDefaultStats();
         this.saveStats();
         this.updateDisplay();
+        
+        // Track en Analytics
+        this.trackEvent('stats_reset', 'system', 'manual_reset');
     }
 
     exportData() {
         return {
             stats: this.getStats(),
             rating: this.getRating(),
-            exportDate: new Date().toISOString()
+            feedback: JSON.parse(localStorage.getItem('odam-feedback') || '[]'),
+            exportDate: new Date().toISOString(),
+            version: '2.0.0'
         };
+    }
+
+    // Método para limpiar datos antiguos
+    cleanupOldData() {
+        try {
+            const feedbacks = JSON.parse(localStorage.getItem('odam-feedback') || '[]');
+            const oneMonthAgo = new Date();
+            oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+            
+            const recentFeedbacks = feedbacks.filter(feedback => {
+                return new Date(feedback.timestamp) > oneMonthAgo;
+            });
+            
+            localStorage.setItem('odam-feedback', JSON.stringify(recentFeedbacks));
+            console.log(`🧹 Limpiados ${feedbacks.length - recentFeedbacks.length} comentarios antiguos`);
+        } catch (error) {
+            console.error('Error limpiando datos antiguos:', error);
+        }
     }
 }
 
@@ -800,13 +1022,22 @@ class LighthouseTracker {
         };
 
         console.log('♿ Lighthouse - Accessibility:', accessibilityChecks);
+        
+        // Track en Analytics
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'accessibility_check', accessibilityChecks);
+        }
     }
 
     static checkColorContrast() {
         // Verificación básica de contraste
-        const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--rich-gold');
-        const backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-black');
-        return primaryColor && backgroundColor ? 'adequate' : 'unknown';
+        try {
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--rich-gold');
+            const backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-black');
+            return primaryColor && backgroundColor ? 'adequate' : 'unknown';
+        } catch (error) {
+            return 'unknown';
+        }
     }
 
     static trackBestPractices() {
@@ -814,10 +1045,16 @@ class LighthouseTracker {
             https: window.location.protocol === 'https:',
             serviceWorker: 'serviceWorker' in navigator,
             modernJS: typeof window.StatsSystem !== 'undefined',
-            responsive: window.innerWidth <= 768 // Check mobile viewport
+            responsive: window.innerWidth <= 768, // Check mobile viewport
+            csrfProtected: typeof window.csrfTokenManager !== 'undefined'
         };
 
         console.log('🏆 Lighthouse - Best Practices:', bestPractices);
+        
+        // Track en Analytics
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'best_practices_check', bestPractices);
+        }
     }
 }
 
@@ -831,6 +1068,14 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             if (window.statsSystem && typeof window.statsSystem.removeDuplicates === 'function') {
                 window.statsSystem.removeDuplicates();
+            }
+            
+            // Limpiar datos antiguos una vez al día
+            const lastCleanup = localStorage.getItem('odam-last-cleanup');
+            const today = new Date().toDateString();
+            if (lastCleanup !== today) {
+                window.statsSystem.cleanupOldData();
+                localStorage.setItem('odam-last-cleanup', today);
             }
         }, 1000);
     } else {
