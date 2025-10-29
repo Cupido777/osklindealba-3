@@ -1,41 +1,59 @@
-// stats-system.js - SISTEMA DE ESTADÍSTICAS DISCRETO MEJORADO CON ANALYTICS Y CSRF
+// stats-system.js - SISTEMA DE ESTADÍSTICAS DISCRETO MEJORADO Y REPARADO
+// CORRECCIONES: Inicialización única + CSRF integrado + Errores de duplicados solucionados
+
 class StatsSystem {
     constructor() {
+        // CORRECCIÓN: Prevenir múltiples instancias
+        if (window.statsSystemInstance) {
+            return window.statsSystemInstance;
+        }
+        window.statsSystemInstance = this;
+
         this.stats = this.loadStats();
         this.rating = this.loadRating();
         this.restrictedWords = this.getRestrictedWords();
         this.analyticsEnabled = false;
         this.containerCreated = false;
         this.csrfToken = null;
+        this.initialized = false;
         this.init();
     }
 
     async init() {
+        if (this.initialized) return;
+        
         await this.loadCSRFToken();
         
-        // 👇 VERIFICAR SI EL CONTENEDOR YA EXISTE ANTES DE CREARLO
-        if (!this.containerCreated && !document.querySelector('.stats-system-container')) {
+        // CORRECCIÓN: Verificación mejorada para evitar duplicados
+        if (!this.containerCreated && !this.checkExistingContainer()) {
             this.createStatsContainer();
             this.containerCreated = true;
+        } else {
+            console.log('⚠️ StatsSystem: Contenedor ya existe, evitando duplicado');
         }
         
         this.initStatsTracking();
         this.initAnalytics();
         this.updateDisplay();
+        this.initialized = true;
+        
         console.log('📊 Sistema de estadísticas ODAM inicializado con Analytics y CSRF');
+    }
+
+    // ===== VERIFICACIÓN DE CONTENEDOR EXISTENTE =====
+    checkExistingContainer() {
+        return document.querySelector('.stats-system-container') !== null;
     }
 
     // ===== SISTEMA CSRF MEJORADO =====
     async loadCSRFToken() {
         try {
-            // Intentar obtener el token del manager global
             if (window.csrfTokenManager) {
                 this.csrfToken = window.csrfTokenManager.getToken();
                 console.log('✅ Token CSRF cargado desde manager global');
                 return;
             }
             
-            // Fallback: generar token local
             const randomBytes = new Uint8Array(32);
             crypto.getRandomValues(randomBytes);
             this.csrfToken = Array.from(randomBytes, byte => 
@@ -46,7 +64,6 @@ class StatsSystem {
             
         } catch (error) {
             console.error('❌ Error cargando token CSRF:', error);
-            // Fallback extremo
             this.csrfToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
         }
     }
@@ -65,7 +82,7 @@ class StatsSystem {
         return isValid;
     }
 
-    // 👇 MÉTODO PARA ELIMINAR DUPLICADOS SI EXISTEN
+    // ===== ELIMINAR DUPLICADOS MEJORADO =====
     removeDuplicates() {
         const containers = document.querySelectorAll('.stats-system-container');
         if (containers.length > 1) {
@@ -86,17 +103,18 @@ class StatsSystem {
 
     // ===== INTEGRACIÓN GOOGLE ANALYTICS 4 =====
     initAnalytics() {
-        // Inyectar Google Analytics 4 solo si no existe
+        if (this.analyticsEnabled) return;
+
         if (!document.querySelector('script[src*="googletagmanager.com"]')) {
             const gaScript = document.createElement('script');
             gaScript.async = true;
-            gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX';
+            gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-C7PBME3G90';
             document.head.appendChild(gaScript);
 
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-XXXXXXXXXX');
+            gtag('config', 'G-C7PBME3G90');
         }
 
         this.analyticsEnabled = true;
@@ -114,21 +132,8 @@ class StatsSystem {
             });
         }
 
-        // Track también en estadísticas internas
         this.stats.clicks++;
         this.saveStats();
-    }
-
-    // ===== CDN PARA ASSETS ESTÁTICOS =====
-    getCDNUrl(path) {
-        const cdnBase = 'https://cdn.osklindealba.com';
-        const localBase = '';
-        
-        // En producción usar CDN, en desarrollo local
-        if (window.location.hostname === 'www.osklindealba.com') {
-            return `${cdnBase}${path}`;
-        }
-        return `${localBase}${path}`;
     }
 
     // ===== SERVICE WORKER INTEGRATION =====
@@ -149,19 +154,12 @@ class StatsSystem {
     loadStats() {
         try {
             const stored = localStorage.getItem('odam-stats');
-            return stored ? JSON.parse(stored) : {
-                visits: 0,
-                timeSpent: 0,
-                scrollDepth: 0,
-                clicks: 0,
-                lastVisit: null,
-                projectsViewed: 0,
-                servicesExplored: 0,
-                audioPlays: 0,
-                formSubmissions: 0,
-                ratingsGiven: 0,
-                feedbackSubmitted: 0
-            };
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                // CORRECCIÓN: Asegurar que todos los campos existan
+                return { ...this.getDefaultStats(), ...parsed };
+            }
+            return this.getDefaultStats();
         } catch (e) {
             console.error('Error cargando estadísticas:', e);
             return this.getDefaultStats();
@@ -171,13 +169,11 @@ class StatsSystem {
     loadRating() {
         try {
             const stored = localStorage.getItem('odam-rating');
-            return stored ? JSON.parse(stored) : {
-                likes: 0,
-                dislikes: 0,
-                userVote: null,
-                totalVotes: 0,
-                lastVote: null
-            };
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                return { ...this.getDefaultRating(), ...parsed };
+            }
+            return this.getDefaultRating();
         } catch (e) {
             console.error('Error cargando rating:', e);
             return this.getDefaultRating();
@@ -214,7 +210,6 @@ class StatsSystem {
         try {
             localStorage.setItem('odam-stats', JSON.stringify(this.stats));
             
-            // Enviar a Analytics si hay cambios significativos
             if (this.analyticsEnabled) {
                 this.sendStatsToAnalytics();
             }
@@ -239,7 +234,6 @@ class StatsSystem {
             this.rating.lastVote = new Date().toISOString();
             localStorage.setItem('odam-rating', JSON.stringify(this.rating));
             
-            // Track en Analytics
             if (this.analyticsEnabled) {
                 this.trackEvent('rating_given', 'user_engagement', this.rating.userVote, this.rating.totalVotes);
             }
@@ -267,7 +261,6 @@ class StatsSystem {
             this.stats.lastVisit = today;
             this.saveStats();
             
-            // Track en Analytics
             this.trackEvent('visit', 'user_engagement', 'daily_visit', this.stats.visits);
         }
     }
@@ -278,7 +271,6 @@ class StatsSystem {
             this.stats.timeSpent += Date.now() - this.startTime;
             this.saveStats();
             
-            // Track session duration en Analytics
             this.trackEvent('session_end', 'user_engagement', 'session_duration', this.stats.timeSpent);
         });
     }
@@ -294,7 +286,6 @@ class StatsSystem {
                 this.stats.scrollDepth = maxScroll;
                 this.saveStats();
                 
-                // Track scroll depth en Analytics
                 if (scrollPercent % 25 === 0) {
                     this.trackEvent('scroll', 'user_engagement', `scroll_${scrollPercent}%`, scrollPercent);
                 }
@@ -308,7 +299,6 @@ class StatsSystem {
                 this.stats.clicks++;
                 this.saveStats();
                 
-                // Track clicks en elementos importantes
                 const target = e.target.closest('a') || e.target.closest('button');
                 if (target) {
                     const label = target.textContent.trim() || target.getAttribute('aria-label') || 'unknown';
@@ -378,8 +368,8 @@ class StatsSystem {
     }
 
     rate(voteType) {
-        // Validar que el voto sea válido
-        if (!['like', 'dislike'].includes(voteType)) {
+        // CORRECCIÓN: Validación mejorada del tipo de voto
+        if (!voteType || !['like', 'dislike'].includes(voteType)) {
             console.error('Tipo de voto inválido:', voteType);
             return;
         }
@@ -432,8 +422,8 @@ class StatsSystem {
     }
 
     createStatsContainer() {
-        // 👇 VERIFICACIÓN DOBLE PARA EVITAR DUPLICADOS
-        if (document.querySelector('.stats-system-container')) {
+        // CORRECCIÓN: Verificación doble mejorada
+        if (this.checkExistingContainer()) {
             console.log('⚠️ El contenedor de estadísticas ya existe. Evitando duplicado.');
             return;
         }
@@ -442,19 +432,19 @@ class StatsSystem {
             <div class="stats-system-container">
                 <div class="stats-title">Interacción de la Comunidad</div>
                 <div class="stats-grid">
-                    <div class="stat-item" onclick="window.statsSystem.handleStatClick('visits')">
+                    <div class="stat-item" data-stat-type="visits">
                         <span class="stat-number" id="stat-visits">${this.stats.visits}</span>
                         <span class="stat-label">Visitas</span>
                     </div>
-                    <div class="stat-item" onclick="window.statsSystem.handleStatClick('time')">
+                    <div class="stat-item" data-stat-type="time">
                         <span class="stat-number" id="stat-time">${Math.round(this.stats.timeSpent / 60000)}m</span>
                         <span class="stat-label">Tiempo</span>
                     </div>
-                    <div class="stat-item" onclick="window.statsSystem.handleStatClick('engagement')">
+                    <div class="stat-item" data-stat-type="engagement">
                         <span class="stat-number" id="stat-engagement">${this.getEngagementScore()}%</span>
                         <span class="stat-label">Compromiso</span>
                     </div>
-                    <div class="stat-item" onclick="window.statsSystem.handleStatClick('projects')">
+                    <div class="stat-item" data-stat-type="projects">
                         <span class="stat-number" id="stat-projects">${this.stats.projectsViewed + this.stats.audioPlays}</span>
                         <span class="stat-label">Proyectos Vistos</span>
                     </div>
@@ -463,12 +453,12 @@ class StatsSystem {
                     <div class="rating-title">¿Te gusta nuestra página?</div>
                     <div class="rating-buttons">
                         <button class="rating-btn like-btn ${this.rating.userVote === 'like' ? 'liked' : ''}" 
-                                onclick="window.statsSystem.rate('like')"
+                                data-vote-type="like"
                                 aria-label="Me gusta">
                             <i class="fas fa-thumbs-up"></i>
                         </button>
                         <button class="rating-btn dislike-btn ${this.rating.userVote === 'dislike' ? 'disliked' : ''}" 
-                                onclick="window.statsSystem.rate('dislike')"
+                                data-vote-type="dislike"
                                 aria-label="No me gusta">
                             <i class="fas fa-thumbs-down"></i>
                         </button>
@@ -476,7 +466,7 @@ class StatsSystem {
                     <div class="rating-result">${this.getRatingText()}</div>
                 </div>
                 <div class="feedback-section">
-                    <button class="feedback-btn" onclick="window.statsSystem.openFeedbackModal()">
+                    <button class="feedback-btn" data-action="open-feedback">
                         <i class="fas fa-comment"></i> Dejar Comentarios
                     </button>
                 </div>
@@ -490,9 +480,16 @@ class StatsSystem {
         `;
 
         const interactionSection = document.getElementById('interaccion');
-        if (interactionSection && !interactionSection.querySelector('.stats-system-container')) {
+        if (interactionSection && !this.checkExistingContainer()) {
+            // CORRECCIÓN CRÍTICA: Eliminar el placeholder antes de insertar el contenido
+            const placeholder = interactionSection.querySelector('.stats-placeholder');
+            if (placeholder) {
+                placeholder.remove();
+            }
+            
             interactionSection.insertAdjacentHTML('beforeend', statsHTML);
             console.log('✅ Contenedor de estadísticas creado exitosamente');
+            this.setupStatsEventListeners();
         } else {
             console.log('⚠️ Sección de interacción no encontrada o contenedor ya existe');
         }
@@ -501,8 +498,33 @@ class StatsSystem {
         this.initLighthouseTracking();
     }
 
+    setupStatsEventListeners() {
+        // Event listeners para estadísticas
+        const statItems = document.querySelectorAll('.stat-item');
+        statItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                const statType = item.getAttribute('data-stat-type');
+                this.handleStatClick(statType, e);
+            });
+        });
+
+        // Event listeners para botones de rating
+        const likeBtn = document.querySelector('.like-btn');
+        const dislikeBtn = document.querySelector('.dislike-btn');
+        const feedbackBtn = document.querySelector('.feedback-btn');
+
+        if (likeBtn) {
+            likeBtn.addEventListener('click', () => this.rate('like'));
+        }
+        if (dislikeBtn) {
+            dislikeBtn.addEventListener('click', () => this.rate('dislike'));
+        }
+        if (feedbackBtn) {
+            feedbackBtn.addEventListener('click', () => this.openFeedbackModal());
+        }
+    }
+
     initLighthouseTracking() {
-        // Simular score de Lighthouse (en producción se calcularía con API)
         setTimeout(() => {
             const score = Math.floor(Math.random() * 20) + 80; // 80-100
             const scoreElement = document.getElementById('lighthouse-score');
@@ -595,21 +617,25 @@ class StatsSystem {
             btn.addEventListener('click', () => this.closeFeedbackModal());
         });
 
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                this.closeFeedbackModal();
-            }
-        });
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    this.closeFeedbackModal();
+                }
+            });
+        }
 
         // Envío del formulario
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.submitFeedback();
-        });
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.submitFeedback();
+            });
+        }
 
         // Cerrar con ESC
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.classList.contains('active')) {
+            if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
                 this.closeFeedbackModal();
             }
         });
@@ -620,15 +646,15 @@ class StatsSystem {
         
         // Validación mejorada con patrones maliciosos
         const maliciousPatterns = [
-            /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, // Script tags
-            /javascript:/gi, // JavaScript protocol
-            /on\w+\s*=/gi, // Event handlers
-            /expression\s*\(/gi, // CSS expressions
-            /vbscript:/gi, // VBScript
-            /<\w+(\s+(\w|\w[\w-]*\w)(\s*=\s*(?:"[^"]*"|'[^']*'|[^'">\s]+))?)+\s*\/?>\s*<\/\w+>/gi, // HTML tags
-            /(http|https):\/\/[^\s]+/g, // URLs
-            /\b[\w\.-]+@[\w\.-]+\.\w+\b/g, // Emails
-            /(\b)(admin|root|system)(\b)/gi // Términos sensibles
+            /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+            /javascript:/gi,
+            /on\w+\s*=/gi,
+            /expression\s*\(/gi,
+            /vbscript:/gi,
+            /<\w+(\s+(\w|\w[\w-]*\w)(\s*=\s*(?:"[^"]*"|'[^']*'|[^'">\s]+))?)+\s*\/?>\s*<\/\w+>/gi,
+            /(http|https):\/\/[^\s]+/g,
+            /\b[\w\.-]+@[\w\.-]+\.\w+\b/g,
+            /(\b)(admin|root|system)(\b)/gi
         ];
         
         const hasMaliciousPattern = maliciousPatterns.some(pattern => 
@@ -689,26 +715,36 @@ class StatsSystem {
     }
 
     async submitFeedback() {
-        const comment = document.getElementById('feedback-comment').value.trim();
+        const commentInput = document.getElementById('feedback-comment');
+        if (!commentInput) return;
+
+        const comment = commentInput.value.trim();
         const errorElement = document.getElementById('feedback-error');
         const successElement = document.getElementById('feedback-success');
         const form = document.getElementById('feedback-form');
-        const csrfToken = form.querySelector('input[name="csrf_token"]').value;
+        
+        if (!form) return;
 
-        errorElement.style.display = 'none';
-        successElement.style.display = 'none';
+        const csrfToken = form.querySelector('input[name="csrf_token"]')?.value;
+
+        if (errorElement) errorElement.style.display = 'none';
+        if (successElement) successElement.style.display = 'none';
 
         // Validar token CSRF
         if (!this.validateCSRFToken(csrfToken)) {
-            errorElement.textContent = 'Error de seguridad. Por favor, recarga la página e intenta nuevamente.';
-            errorElement.style.display = 'block';
+            if (errorElement) {
+                errorElement.textContent = 'Error de seguridad. Por favor, recarga la página e intenta nuevamente.';
+                errorElement.style.display = 'block';
+            }
             return;
         }
 
         const validation = this.validateComment(comment);
         if (!validation.isValid) {
-            errorElement.textContent = validation.message;
-            errorElement.style.display = 'block';
+            if (errorElement) {
+                errorElement.textContent = validation.message;
+                errorElement.style.display = 'block';
+            }
             return;
         }
 
@@ -719,7 +755,9 @@ class StatsSystem {
             // Guardar localmente como respaldo
             this.saveFeedback(comment);
             
-            successElement.style.display = 'block';
+            if (successElement) {
+                successElement.style.display = 'block';
+            }
             this.stats.feedbackSubmitted++;
             this.saveStats();
             
@@ -728,18 +766,24 @@ class StatsSystem {
             
             setTimeout(() => {
                 this.closeFeedbackModal();
-                successElement.style.display = 'none';
+                if (successElement) {
+                    successElement.style.display = 'none';
+                }
             }, 2000);
             
         } catch (error) {
             console.error('Error enviando feedback:', error);
             // Fallback a almacenamiento local
             this.saveFeedback(comment);
-            successElement.style.display = 'block';
+            if (successElement) {
+                successElement.style.display = 'block';
+            }
             
             setTimeout(() => {
                 this.closeFeedbackModal();
-                successElement.style.display = 'none';
+                if (successElement) {
+                    successElement.style.display = 'none';
+                }
             }, 2000);
         }
     }
@@ -905,12 +949,14 @@ class StatsSystem {
         return `${percentage}% de las personas les gusta esta página (${total} votos)`;
     }
 
-    handleStatClick(statType) {
-        const statItem = event.currentTarget;
-        statItem.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            statItem.style.transform = 'scale(1)';
-        }, 150);
+    handleStatClick(statType, event) {
+        if (event) {
+            const statItem = event.currentTarget;
+            statItem.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                statItem.style.transform = 'scale(1)';
+            }, 150);
+        }
         
         // Track en Analytics
         this.trackEvent('stat_click', 'user_interaction', statType);
@@ -1001,7 +1047,6 @@ class LighthouseTracker {
                 const loadTime = navigationTiming.loadEventEnd - navigationTiming.navigationStart;
                 console.log(`🚀 Lighthouse - Page Load Time: ${loadTime}ms`);
                 
-                // Enviar a Analytics
                 if (typeof gtag !== 'undefined') {
                     gtag('event', 'performance_timing', {
                         load_time: loadTime,
@@ -1013,7 +1058,6 @@ class LighthouseTracker {
     }
 
     static trackAccessibility() {
-        // Verificar características de accesibilidad
         const accessibilityChecks = {
             hasAltTags: document.querySelectorAll('img:not([alt])').length === 0,
             hasHeadings: document.querySelectorAll('h1, h2, h3').length > 0,
@@ -1023,14 +1067,12 @@ class LighthouseTracker {
 
         console.log('♿ Lighthouse - Accessibility:', accessibilityChecks);
         
-        // Track en Analytics
         if (typeof gtag !== 'undefined') {
             gtag('event', 'accessibility_check', accessibilityChecks);
         }
     }
 
     static checkColorContrast() {
-        // Verificación básica de contraste
         try {
             const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--rich-gold');
             const backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-black');
@@ -1045,13 +1087,12 @@ class LighthouseTracker {
             https: window.location.protocol === 'https:',
             serviceWorker: 'serviceWorker' in navigator,
             modernJS: typeof window.StatsSystem !== 'undefined',
-            responsive: window.innerWidth <= 768, // Check mobile viewport
+            responsive: window.innerWidth <= 768,
             csrfProtected: typeof window.csrfTokenManager !== 'undefined'
         };
 
         console.log('🏆 Lighthouse - Best Practices:', bestPractices);
         
-        // Track en Analytics
         if (typeof gtag !== 'undefined') {
             gtag('event', 'best_practices_check', bestPractices);
         }
@@ -1060,7 +1101,7 @@ class LighthouseTracker {
 
 // 👇 INICIALIZACIÓN MEJORADA PARA EVITAR MÚLTIPLES INSTANCIAS
 document.addEventListener('DOMContentLoaded', function() {
-    // Verificar si ya existe una instancia
+    // CORRECCIÓN: Verificación mejorada para evitar instancias múltiples
     if (!window.statsSystem) {
         window.statsSystem = new StatsSystem();
         

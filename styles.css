@@ -1,180 +1,6 @@
-/* ===== ODAM - CSS OPTIMIZADO PARA MÁXIMO RENDIMIENTO ===== */
+/* ===== ODAM - CSS OPTIMIZADO Y CORREGIDO ===== */
 
-/* === NUEVAS MEJORAS PARA ONDAS INTERACTIVAS Y PARTÍCULAS === */
-
-/* Prevenir layout shifts - MEJORADO */
-.profile-image,
-.brand img,
-.footer-brand img,
-.project-image {
-  aspect-ratio: 1 / 1;
-  content-visibility: auto;
-}
-
-/* Optimizar animaciones para GPU - MEJORADO */
-.fade-in,
-.service-accordion-header,
-.btn,
-.audio-player-mini {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
-  will-change: transform, opacity;
-}
-
-/* Mejorar CLS (Cumulative Layout Shift) - MEJORADO */
-.profile-image-container,
-.project-image,
-.contact-icon,
-.testimonial-card {
-  position: relative;
-  overflow: hidden;
-  contain: layout style paint;
-}
-
-/* Optimizar fondo para móviles - MEJORADO */
-.full-page-background {
-  background-attachment: scroll;
-  will-change: transform;
-  content-visibility: auto;
-}
-
-@media (min-width: 1024px) {
-  .full-page-background {
-    background-attachment: fixed;
-  }
-}
-
-/* Desactivar partículas en móviles para mejor performance */
-@media (max-width: 768px) {
-  #particles-js {
-    display: none;
-  }
-}
-
-/* === NUEVO: ONDAS DE AUDIO INTERACTIVAS MEJORADAS === */
-.audio-waveform {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  height: 40px;
-  width: 100%;
-  gap: 3px;
-  padding: 5px 0;
-  contain: layout style;
-  position: relative;
-}
-
-.wave-bar {
-  flex: 1;
-  min-height: 4px;
-  border-radius: 4px 4px 2px 2px;
-  background: linear-gradient(180deg, var(--rich-gold), var(--vibrant-gold));
-  transition: height 0.1s ease, opacity 0.2s ease;
-  will-change: height, opacity;
-  box-shadow: 0 2px 6px rgba(200, 162, 95, 0.3);
-}
-
-/* Estados de las ondas cuando NO se reproduce */
-.audio-player-mini:not(.playing) .wave-bar {
-  animation: waveIdle 2s ease-in-out infinite;
-  opacity: 0.6;
-  background: linear-gradient(180deg, rgba(200, 162, 95, 0.6), rgba(212, 175, 55, 0.4));
-}
-
-.wave-bar:nth-child(1) { animation-delay: 0s; height: 20%; }
-.wave-bar:nth-child(2) { animation-delay: 0.2s; height: 40%; }
-.wave-bar:nth-child(3) { animation-delay: 0.4s; height: 60%; }
-.wave-bar:nth-child(4) { animation-delay: 0.6s; height: 80%; }
-.wave-bar:nth-child(5) { animation-delay: 0.8s; height: 70%; }
-.wave-bar:nth-child(6) { animation-delay: 1.0s; height: 50%; }
-.wave-bar:nth-child(7) { animation-delay: 1.2s; height: 30%; }
-.wave-bar:nth-child(8) { animation-delay: 1.4s; height: 20%; }
-
-/* Estados de las ondas cuando SÍ se reproduce */
-.audio-player-mini.playing .wave-bar {
-  opacity: 1;
-  background: linear-gradient(180deg, var(--rich-gold), var(--vibrant-gold));
-}
-
-/* Efecto especial cuando la canción está en partes intensas */
-.audio-player-mini.playing .wave-bar.intense {
-  background: linear-gradient(180deg, var(--vibrant-gold), #ffd700);
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
-}
-
-@keyframes waveIdle {
-  0%, 100% { 
-    transform: scaleY(0.8);
-    opacity: 0.4;
-  }
-  50% { 
-    transform: scaleY(1.1);
-    opacity: 0.7;
-  }
-}
-
-/* === NUEVO: INDICADOR DE CARGA === */
-.loading-progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: rgba(200, 162, 95, 0.1);
-  z-index: 9999;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.loading-progress.loading {
-  opacity: 1;
-}
-
-.progress-bar {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(135deg, var(--rich-gold), var(--vibrant-gold));
-  width: 0%;
-  transition: width 0.4s ease;
-  animation: loadingPulse 2s ease-in-out infinite;
-}
-
-@keyframes loadingPulse {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 1; }
-}
-
-/* === ELIMINAR PUNTO BLANCO ANTES DE SERVICIOS === */
-.services-section::before {
-  display: none !important;
-}
-
-.services-section {
-  position: relative;
-  overflow: hidden;
-}
-
-.services-section::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: transparent;
-}
-
-/* === MANTENER TODO EL CÓDIGO EXISTENTE FUNCIONAL === */
-/* (Todo tu código original permanece intacto aquí) */
-
+/* === VARIABLES Y CONFIGURACIÓN PRINCIPAL === */
 :root {
   --primary-black: #000000;
   --deep-black: #0a0a0a;
@@ -215,6 +41,7 @@
   --font-extrabold: 800;
 }
 
+/* === RESET Y CONFIGURACIÓN BASE === */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -239,6 +66,7 @@ body {
   position: relative;
 }
 
+/* === FONDOS Y PARTÍCULAS === */
 .full-page-background {
   position: fixed;
   top: 0;
@@ -248,10 +76,18 @@ body {
   background-image: url('tu-fondo.webp');
   background-size: cover;
   background-position: center top 20%;
-  background-attachment: fixed;
+  background-attachment: scroll;
   opacity: 0.30;
   z-index: -2;
   pointer-events: none;
+  will-change: transform;
+  content-visibility: auto;
+}
+
+@media (min-width: 1024px) {
+  .full-page-background {
+    background-attachment: fixed;
+  }
 }
 
 #particles-js {
@@ -264,13 +100,19 @@ body {
   background: transparent;
 }
 
+@media (max-width: 768px) {
+  #particles-js {
+    display: none;
+  }
+}
+
 .container {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 0 var(--space-md);
 }
 
-/* === HEADER === */
+/* === HEADER MEJORADO === */
 header {
   position: fixed;
   top: 0;
@@ -317,6 +159,8 @@ header.scrolled {
   object-fit: cover;
   border-radius: var(--border-radius-sm);
   border: 2px solid var(--border-gold);
+  aspect-ratio: 1 / 1;
+  content-visibility: auto;
 }
 
 .brand h1 {
@@ -327,6 +171,7 @@ header.scrolled {
   letter-spacing: 0.5px;
 }
 
+/* === NAVEGACIÓN DESKTOP === */
 nav {
   display: flex;
   gap: var(--space-md);
@@ -381,6 +226,90 @@ nav a:hover::after {
 .cta:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-gold);
+}
+
+/* === NAVEGACIÓN MÓVIL - CORREGIDA === */
+.nav-toggle {
+  display: none !important;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 25px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1001;
+  position: relative;
+}
+
+.nav-toggle .hamburger-line {
+  width: 100%;
+  height: 3px;
+  background: var(--rich-gold);
+  border-radius: 3px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.nav-toggle[aria-expanded="true"] .hamburger-line:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.nav-toggle[aria-expanded="true"] .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle[aria-expanded="true"] .hamburger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: flex !important;
+  }
+
+  nav {
+    position: fixed;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.98);
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    padding: var(--space-lg);
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid var(--border-light);
+    gap: var(--space-md);
+    z-index: 999;
+  }
+
+  nav.open {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  nav a {
+    width: 100%;
+    text-align: center;
+    padding: var(--space-md);
+    font-size: 1.1rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  nav a:last-child {
+    border-bottom: none;
+  }
+
+  .cta {
+    width: 100%;
+    justify-content: center;
+    margin-top: var(--space-sm);
+  }
 }
 
 /* === HERO SECTION === */
@@ -496,6 +425,10 @@ nav a:hover::after {
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform, opacity;
 }
 
 .btn::before {
@@ -629,6 +562,8 @@ nav a:hover::after {
 .profile-image-container {
     position: relative;
     margin-bottom: var(--space-md);
+    overflow: hidden;
+    contain: layout style paint;
 }
 
 .profile-image {
@@ -640,6 +575,8 @@ nav a:hover::after {
     box-shadow: var(--shadow-gold);
     display: block;
     margin: 0 auto;
+    aspect-ratio: 1 / 1;
+    content-visibility: auto;
 }
 
 .profile-overlay {
@@ -726,6 +663,7 @@ nav a:hover::after {
   background: var(--vibrant-gold);
 }
 
+/* === SECCIONES GENERALES === */
 .section {
   padding: var(--space-xxl) 0;
   position: relative;
@@ -751,6 +689,16 @@ nav a:hover::after {
   color: var(--text-secondary);
   font-size: 1.2rem;
   line-height: 1.6;
+}
+
+/* === SERVICIOS - CORREGIDO === */
+.services-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.services-section::before {
+  display: none !important;
 }
 
 .services-accordion {
@@ -977,6 +925,7 @@ nav a:hover::after {
     font-size: 0.9rem;
 }
 
+/* === PROYECTOS === */
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -992,6 +941,7 @@ nav a:hover::after {
   border-radius: var(--border-radius-lg);
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  contain: layout style paint;
 }
 
 .project-card:hover {
@@ -1008,6 +958,7 @@ nav a:hover::after {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  contain: layout style paint;
 }
 
 .project-image::before {
@@ -1068,34 +1019,193 @@ nav a:hover::after {
   border: 1px solid var(--border-gold);
 }
 
+/* === SECCIÓN INSPIRACIÓN - CORREGIDA === */
+
+.inspiration-section {
+  position: relative;
+  z-index: 1;
+}
+
 .inspiration-content {
   text-align: center;
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
-.inspiration-quote {
-  color: var(--rich-gold);
-  font-size: 1.5rem;
-  font-style: italic;
-  padding: var(--space-xl);
-  border-left: 4px solid var(--rich-gold);
-  background: rgba(200, 162, 95, 0.05);
-  border-radius: var(--border-radius);
-  line-height: 1.6;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  min-height: 120px;
-  display: block;
+#bible-verse {
+  background: linear-gradient(135deg, 
+      rgba(200, 162, 95, 0.15) 0%, 
+      rgba(212, 175, 55, 0.1) 100%);
+  color: var(--text-primary);
+  padding: 50px 40px;
+  border-radius: var(--border-radius-lg);
+  margin: 30px 0;
+  box-shadow: var(--shadow-lg);
   text-align: center;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column; /* CORRECCIÓN: Cambiado a columna */
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-gold);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
 }
 
-.inspiration-quote:hover {
-  background: rgba(200, 162, 95, 0.08);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-gold);
+#bible-verse::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+      rgba(200, 162, 95, 0.05) 0%, 
+      transparent 50%,
+      rgba(212, 175, 55, 0.05) 100%);
+  z-index: 1;
 }
 
+#bible-verse::after {
+  content: '"';
+  font-size: 140px;
+  position: absolute;
+  top: 10px;
+  left: 30px;
+  opacity: 0.08;
+  color: var(--rich-gold);
+  font-family: serif;
+  z-index: 1;
+}
+
+#bible-verse:hover {
+  transform: translateY(-5px);
+  border-color: rgba(200, 162, 95, 0.5);
+  box-shadow: 0 20px 50px rgba(200, 162, 95, 0.2);
+}
+
+.verse-content {
+  max-width: 700px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column; /* CORRECCIÓN: Aseguramos disposición vertical */
+  gap: 15px; /* CORRECCIÓN: Espacio entre texto y referencia */
+}
+
+.verse-text {
+  font-size: 1.5em;
+  font-style: italic;
+  line-height: 1.6;
+  margin-bottom: 0; /* CORRECCIÓN: Eliminamos margen inferior */
+  color: var(--text-primary);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: var(--font-light);
+  width: 100%; /* CORRECCIÓN: Aseguramos ancho completo */
+}
+
+.verse-reference {
+  font-size: 1.5em;
+  font-weight: var(--font-semibold);
+  color: var(--rich-gold);
+  margin: 0; /* CORRECCIÓN: Eliminamos márgenes conflictivos */
+  font-style: normal;
+  letter-spacing: 0.5px;
+  position: relative;
+  padding-top: 15px;
+  width: 100%; /* CORRECCIÓN: Aseguramos ancho completo */
+}
+
+/* ✅ CORRECCIÓN: Eliminamos la línea que estaba entre el versículo y la referencia */
+/* .verse-reference::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background: var(--rich-gold);
+    opacity: 0.6;
+} */
+
+/* Estados de carga y error */
+#bible-verse.loading .verse-text {
+  color: var(--text-muted);
+  font-style: normal;
+}
+
+#bible-verse.error .verse-text {
+  color: #ff6b6b;
+  font-style: normal;
+}
+
+/* Animación de fade in para nuevos versículos */
+.verse-fade-in {
+  animation: verseFadeIn 0.8s ease-out;
+}
+
+@keyframes verseFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #bible-verse {
+    padding: 40px 25px;
+    margin: 20px 0;
+    min-height: 150px;
+  }
+  
+  .verse-text {
+    font-size: 1.3em;
+  }
+  
+  .verse-reference {
+    font-size: 1em;
+  }
+  
+  #bible-verse::after {
+    font-size: 100px;
+    left: 15px;
+    top: 5px;
+  }
+  
+  .verse-reference::before {
+    width: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  #bible-verse {
+    padding: 30px 20px;
+    min-height: 130px;
+  }
+  
+  .verse-text {
+    font-size: 1.1em;
+  }
+  
+  .verse-reference {
+    font-size: 0.9em;
+  }
+  
+  #bible-verse::after {
+    font-size: 80px;
+    left: 10px;
+  }
+}
+
+/* === CONTACTO === */
 .contact-content {
   max-width: 1000px;
   margin: 0 auto;
@@ -1127,6 +1237,7 @@ nav a:hover::after {
   padding: var(--space-xl);
   text-align: center;
   transition: all 0.3s ease;
+  contain: layout style paint;
 }
 
 .contact-card:hover {
@@ -1146,6 +1257,7 @@ nav a:hover::after {
   justify-content: center;
   font-size: 1.8rem;
   color: var(--primary-black);
+  contain: layout style paint;
 }
 
 .contact-card h3 {
@@ -1211,6 +1323,7 @@ nav a:hover::after {
   transform: translateY(-2px);
 }
 
+/* === FOOTER === */
 footer {
   background: var(--deep-black);
   border-top: 1px solid var(--border-light);
@@ -1252,6 +1365,8 @@ footer {
   height: 50px;
   border-radius: var(--border-radius-sm);
   border: 2px solid var(--border-gold);
+  aspect-ratio: 1 / 1;
+  content-visibility: auto;
 }
 
 .footer-brand h3 {
@@ -1338,6 +1453,7 @@ footer {
   font-size: 0.9rem;
 }
 
+/* === MODAL === */
 .modal {
   display: none;
   position: fixed;
@@ -1459,10 +1575,15 @@ footer {
   }
 }
 
+/* === ANIMACIONES Y EFECTOS === */
 .fade-in {
   opacity: 0;
   transform: translateY(30px);
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform, opacity;
 }
 
 .fade-in.show {
@@ -1470,70 +1591,8 @@ footer {
   transform: translateY(0);
 }
 
+/* === MEJORAS RESPONSIVE ADICIONALES === */
 @media (max-width: 768px) {
-  nav {
-    position: fixed;
-    top: 70px;
-    left: 0;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.98);
-    backdrop-filter: blur(20px);
-    flex-direction: column;
-    padding: var(--space-lg);
-    transform: translateY(-100%);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    border-bottom: 1px solid var(--border-light);
-    gap: var(--space-md);
-  }
-
-  nav.open {
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .nav-toggle {
-    display: flex !important;
-    flex-direction: column;
-    justify-content: space-around;
-    width: 30px;
-    height: 30px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    z-index: 1001;
-  }
-
-  .nav-toggle .hamburger {
-    width: 100%;
-    height: 2px;
-    background: var(--rich-gold);
-    transition: all 0.3s ease;
-    position: relative;
-  }
-
-  .nav-toggle .hamburger::before,
-  .nav-toggle .hamburger::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: var(--rich-gold);
-    transition: all 0.3s ease;
-  }
-
-  .nav-toggle .hamburger::before {
-    top: -8px;
-  }
-
-  .nav-toggle .hamburger::after {
-    bottom: -8px;
-  }
-
   .hero {
     padding: 120px 0 var(--space-xl);
   }
@@ -1614,26 +1673,6 @@ footer {
     text-align: left;
     padding-left: 20px;
   }
-
-  .audio-player-mini {
-    padding: 10px 12px;
-    gap: 10px;
-  }
-
-  .audio-waveform {
-    height: 30px;
-    margin-bottom: 5px;
-  }
-
-  .wave-bar {
-    min-height: 3px;
-  }
-
-  .audio-time {
-    font-size: 0.75rem;
-    min-width: 35px;
-    margin-top: 5px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -1668,111 +1707,27 @@ footer {
     padding: var(--space-md);
   }
 
-  .inspiration-quote {
-    font-size: 1.2rem;
-    padding: var(--space-lg);
-  }
-
-  .audio-player-mini {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .audio-play-btn {
-    align-self: center;
-  }
-
-  .audio-time {
-    text-align: center;
-    margin-top: 8px;
-  }
-
-  .audio-waveform {
-    height: 25px;
-    gap: 2px;
-  }
-
-  .wave-bar {
-    min-height: 3px;
-    border-radius: 3px 3px 2px 2px;
-  }
-}
-
-/* MEJORAS DE ACCESIBILIDAD Y CONTRASTE */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  #bible-verse {
+    padding: 30px 20px;
+    margin: 15px 0;
   }
   
-  .fade-in {
-    transition: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+  .verse-text {
+    font-size: 1.2em;
   }
   
-  .wave-bar {
-    animation: none !important;
-  }
-}
-
-:focus-visible {
-  outline: 3px solid var(--rich-gold);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-
-.btn:focus-visible,
-.audio-play-btn:focus-visible,
-.rating-btn:focus-visible {
-  outline: 3px solid var(--rich-gold);
-  outline-offset: 2px;
-}
-
-@media (prefers-contrast: high) {
-  :root {
-    --primary-black: #000000;
-    --text-primary: #ffffff;
-    --rich-gold: #ffd700;
-    --border-gold: #ffd700;
+  .verse-reference {
+    font-size: 1em;
   }
   
-  .btn-primary,
-  .btn-gold {
-    color: #000000 !important;
+  #bible-verse::before {
+    font-size: 80px;
+    left: 10px;
+    top: 5px;
   }
 }
 
-.visual-tag {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-width: 100%;
-}
-
-/* Flecha personalizada para selects */
-.form-group select {
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c8a25f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 16px;
-  padding-right: 40px;
-  background-color: rgba(255, 255, 255, 0.05) !important;
-}
-
-.form-group select option {
-  background: var(--deep-black);
-  color: var(--text-primary);
-  padding: 10px;
-}
-
-/* ===== REPRODUCTOR DE AUDIO MEJORADO - DISEÑO PREMIUM ===== */
+/* === REPRODUCTOR DE AUDIO MEJORADO === */
 .audio-player-mini {
     display: flex;
     align-items: center;
@@ -1786,6 +1741,10 @@ footer {
     margin: 20px 0;
     position: relative;
     overflow: hidden;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    will-change: transform, opacity;
 }
 
 .audio-player-mini::before {
@@ -1896,124 +1855,201 @@ footer {
     margin-top: 5px;
 }
 
-/* Estados de reproducción */
-.audio-player-mini.playing .audio-play-btn {
-    background: linear-gradient(135deg, var(--vibrant-gold), #ffa500);
+/* === ONDAS DE AUDIO INTERACTIVAS === */
+.audio-waveform {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 40px;
+  width: 100%;
+  gap: 3px;
+  padding: 5px 0;
+  contain: layout style;
+  position: relative;
 }
 
-/* Responsive mejorado para móviles */
+.wave-bar {
+  flex: 1;
+  min-height: 4px;
+  border-radius: 4px 4px 2px 2px;
+  background: linear-gradient(180deg, var(--rich-gold), var(--vibrant-gold));
+  transition: height 0.1s ease, opacity 0.2s ease;
+  will-change: height, opacity;
+  box-shadow: 0 2px 6px rgba(200, 162, 95, 0.3);
+}
+
+.audio-player-mini:not(.playing) .wave-bar {
+  animation: waveIdle 2s ease-in-out infinite;
+  opacity: 0.6;
+  background: linear-gradient(180deg, rgba(200, 162, 95, 0.6), rgba(212, 175, 55, 0.4));
+}
+
+.wave-bar:nth-child(1) { animation-delay: 0s; height: 20%; }
+.wave-bar:nth-child(2) { animation-delay: 0.2s; height: 40%; }
+.wave-bar:nth-child(3) { animation-delay: 0.4s; height: 60%; }
+.wave-bar:nth-child(4) { animation-delay: 0.6s; height: 80%; }
+.wave-bar:nth-child(5) { animation-delay: 0.8s; height: 70%; }
+.wave-bar:nth-child(6) { animation-delay: 1.0s; height: 50%; }
+.wave-bar:nth-child(7) { animation-delay: 1.2s; height: 30%; }
+.wave-bar:nth-child(8) { animation-delay: 1.4s; height: 20%; }
+
+.audio-player-mini.playing .wave-bar {
+  opacity: 1;
+  background: linear-gradient(180deg, var(--rich-gold), var(--vibrant-gold));
+}
+
+@keyframes waveIdle {
+  0%, 100% { 
+    transform: scaleY(0.8);
+    opacity: 0.4;
+  }
+  50% { 
+    transform: scaleY(1.1);
+    opacity: 0.7;
+  }
+}
+
+/* === LOADING PROGRESS === */
+.loading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(200, 162, 95, 0.1);
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.loading-progress.loading {
+  opacity: 1;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, var(--rich-gold), var(--vibrant-gold));
+  width: 0%;
+  transition: width 0.4s ease;
+  animation: loadingPulse 2s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+/* === MEJORAS DE ACCESIBILIDAD === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .fade-in {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
+  .wave-bar {
+    animation: none !important;
+  }
+}
+
+:focus-visible {
+  outline: 3px solid var(--rich-gold);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.btn:focus-visible,
+.audio-play-btn:focus-visible {
+  outline: 3px solid var(--rich-gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-contrast: high) {
+  :root {
+    --primary-black: #000000;
+    --text-primary: #ffffff;
+    --rich-gold: #ffd700;
+    --border-gold: #ffd700;
+  }
+  
+  .btn-primary,
+  .btn-gold {
+    color: #000000 !important;
+  }
+}
+
+/* === SELECT PERSONALIZADO === */
+.form-group select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c8a25f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.form-group select option {
+  background: var(--deep-black);
+  color: var(--text-primary);
+  padding: 10px;
+}
+
+/* === CLASES UTILITARIAS === */
+.mobile-only {
+  display: none;
+}
+
 @media (max-width: 768px) {
-    .audio-player-mini {
-        padding: 14px;
-        gap: 10px;
-        margin: 16px 0;
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-    
-    .audio-play-btn {
-        width: 44px;
-        height: 44px;
-        order: 1;
-    }
-    
-    .audio-play-btn i {
-        font-size: 1.1rem;
-    }
-    
-    .audio-progress-container {
-        order: 2;
-        flex: 1 0 100%;
-        margin-top: 8px;
-    }
-    
-    .audio-time {
-        order: 3;
-        margin-left: auto;
-        margin-top: 5px;
-        font-size: 0.8rem;
-        min-width: 40px;
-        padding: 5px 8px;
-    }
+  .mobile-only {
+    display: inline-block;
+  }
 }
 
-@media (max-width: 480px) {
-    .audio-player-mini {
-        padding: 12px;
-        gap: 8px;
-    }
-    
-    .audio-play-btn {
-        width: 40px;
-        height: 40px;
-    }
-    
-    .audio-time {
-        margin-left: 0;
-        align-self: center;
-    }
-    
-    .audio-waveform {
-        height: 24px;
-    }
-}
-
-/* Estados de error */
-.audio-player-mini.error .audio-play-btn {
-    background: linear-gradient(135deg, #ff6b6b, #ff4757);
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-}
-
-.audio-player-mini.error .audio-time {
-    background: rgba(255, 107, 107, 0.1);
-    border-color: rgba(255, 107, 107, 0.2);
-    color: #ff6b6b;
-}
-
-/* Animación para el botón de instalación PWA */
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-    }
-    40% {
-        transform: translateY(-5px);
-    }
-    60% {
-        transform: translateY(-3px);
-    }
-}
-
-/* Notificaciones toast */
-.notification-toast {
-    animation: slideInRight 0.3s ease;
-}
-
-@keyframes slideInRight {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes slideOutRight {
-    from {
-        transform: translateX(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-}
-
-/* Contador de caracteres */
 .char-counter {
-    text-align: right;
-    font-size: 0.8rem;
-    color: #b0b0b0;
-    margin-top: 5px;
+  text-align: right;
+  font-size: 0.8rem;
+  color: #b0b0b0;
+  margin-top: 5px;
+}
+
+.visual-tag {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+/* === CORRECCIONES ESPECÍFICAS PARA EL VERSÍCULO === */
+.verse-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+
+.verse-text {
+  display: block;
+  width: 100%;
+}
+
+.verse-reference {
+  display: block;
+  width: 100%;
 }

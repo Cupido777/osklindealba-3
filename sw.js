@@ -1,10 +1,10 @@
 // =============================================
-// ODAM Producción Musical - Service Worker
+// ODAM Producción Musical - Service Worker REPARADO
 // Cache Strategy & Performance Optimization
-// Version: 2.0.0
+// Version: 2.0.1 - CORREGIDO
 // =============================================
 
-const CACHE_NAME = 'odam-cache-v2.0.0';
+const CACHE_NAME = 'odam-cache-v2.0.1';
 const CDN_BASE = 'https://cdn.osklindealba.com';
 const API_BASE = 'https://api.osklindealba.com';
 
@@ -21,15 +21,15 @@ const STATIC_ASSETS = [
   // JavaScript
   '/script.js',
   '/stats-system.js',
+  '/lighthouse-config.js',
   
   // Imágenes Críticas
   '/logo.jpg',
   '/tu-foto.jpg',
-  '/tu-fondo.jpg',
   '/logo-192x192.png',
   '/logo-512x512.png',
   
-  // Archivos de Audio (MP3)
+  // Archivos de Audio (MP3) - CORREGIDO: Solo nombres base
   '/tu-me-sostendras.mp3',
   '/renovados-en-tu-voluntad.mp3',
   '/en-ti-confio-senor.mp3',
@@ -46,18 +46,10 @@ const STATIC_ASSETS = [
   '/manifest.json'
 ];
 
-const DYNAMIC_ASSETS = [
-  // Rutas dinámicas que deben estar disponibles offline
-  '/#servicios',
-  '/#proyectos',
-  '/#contacto',
-  '/#interaccion'
-];
-
-// ===== ESTRATEGIAS DE CACHE =====
+// ===== ESTRATEGIAS DE CACHE MEJORADAS =====
 const CACHE_STRATEGIES = {
   STATIC: 'cache-first',
-  DYNAMIC: 'network-first',
+  DYNAMIC: 'network-first', 
   IMAGES: 'cache-first',
   AUDIO: 'cache-first',
   API: 'network-first'
@@ -65,13 +57,17 @@ const CACHE_STRATEGIES = {
 
 // ===== INSTALACIÓN DEL SERVICE WORKER =====
 self.addEventListener('install', (event) => {
-  console.log('🚀 Service Worker: Instalando...');
+  console.log('🚀 Service Worker: Instalando versión corregida...');
   
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('📦 Service Worker: Cacheando recursos estáticos');
-        return cache.addAll(STATIC_ASSETS);
+        // CORRECCIÓN: Cachear solo recursos críticos primero
+        const criticalAssets = STATIC_ASSETS.filter(asset => 
+          !asset.includes('.mp3') && !asset.includes('cdn.jsdelivr.net')
+        );
+        return cache.addAll(criticalAssets);
       })
       .then(() => {
         console.log('✅ Service Worker: Instalación completada');
@@ -79,20 +75,21 @@ self.addEventListener('install', (event) => {
       })
       .catch((error) => {
         console.error('❌ Service Worker: Error en instalación', error);
+        // CORRECCIÓN: Continuar incluso si hay errores
+        return self.skipWaiting();
       })
   );
 });
 
 // ===== ACTIVACIÓN DEL SERVICE WORKER =====
 self.addEventListener('activate', (event) => {
-  console.log('🎯 Service Worker: Activando...');
+  console.log('🎯 Service Worker: Activando versión corregida...');
   
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
-            // Eliminar caches antiguos
             if (cacheName !== CACHE_NAME) {
               console.log('🗑️ Service Worker: Eliminando cache antiguo', cacheName);
               return caches.delete(cacheName);
@@ -104,16 +101,26 @@ self.addEventListener('activate', (event) => {
         console.log('✅ Service Worker: Activación completada');
         return self.clients.claim();
       })
+      .catch((error) => {
+        console.error('❌ Service Worker: Error en activación', error);
+        return self.clients.claim();
+      })
   );
 });
 
-// ===== INTERCEPTACIÓN DE PETICIONES =====
+// ===== INTERCEPTACIÓN DE PETICIONES CORREGIDA =====
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
   
   // Solo manejar peticiones HTTP/HTTPS
   if (!request.url.startsWith('http')) return;
+  
+  // CORRECCIÓN: Excluir analytics y recursos externos no críticos
+  if (url.hostname.includes('googletagmanager.com') || 
+      url.hostname.includes('google-analytics.com')) {
+    return;
+  }
   
   event.respondWith(
     handleRequest(event)
@@ -124,7 +131,7 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// ===== MANEJO DE PETICIONES =====
+// ===== MANEJO DE PETICIONES MEJORADO =====
 async function handleRequest(event) {
   const request = event.request;
   const url = new URL(request.url);
@@ -146,7 +153,7 @@ async function handleRequest(event) {
   
   // Estrategia para imágenes - Cache First con actualización
   if (request.destination === 'image') {
-    return staleWhileRevalidateStrategy(request);
+    return cacheFirstStrategy(request);
   }
   
   // Estrategia para audio - Cache First
@@ -158,20 +165,20 @@ async function handleRequest(event) {
   return networkFirstStrategy(request);
 }
 
-// ===== ESTRATEGIA CACHE FIRST =====
+// ===== ESTRATEGIA CACHE FIRST CORREGIDA =====
 async function cacheFirstStrategy(request) {
-  const cache = await caches.open(CACHE_NAME);
-  const cachedResponse = await cache.match(request);
-  
-  if (cachedResponse) {
-    console.log('💾 Service Worker: Sirviendo desde cache', request.url);
-    return cachedResponse;
-  }
-  
   try {
+    const cache = await caches.open(CACHE_NAME);
+    const cachedResponse = await cache.match(request);
+    
+    if (cachedResponse) {
+      console.log('💾 Service Worker: Sirviendo desde cache', request.url);
+      return cachedResponse;
+    }
+    
     const networkResponse = await fetch(request);
     
-    if (networkResponse.ok) {
+    if (networkResponse.ok && networkResponse.status === 200) {
       console.log('🌐 Service Worker: Cacheando nuevo recurso', request.url);
       cache.put(request, networkResponse.clone());
     }
@@ -183,7 +190,7 @@ async function cacheFirstStrategy(request) {
   }
 }
 
-// ===== ESTRATEGIA NETWORK FIRST =====
+// ===== ESTRATEGIA NETWORK FIRST CORREGIDA =====
 async function networkFirstStrategy(request) {
   try {
     const networkResponse = await fetch(request);
@@ -211,86 +218,84 @@ async function networkFirstStrategy(request) {
     
     // Fallback para páginas HTML
     if (request.headers.get('Accept')?.includes('text/html')) {
-      return caches.match('/offline.html') || caches.match('/');
+      return caches.match('/') || createOfflineResponse();
     }
     
     throw error;
   }
 }
 
-// ===== ESTRATEGIA STALE WHILE REVALIDATE =====
-async function staleWhileRevalidateStrategy(request) {
-  const cache = await caches.open(CACHE_NAME);
-  const cachedResponse = await cache.match(request);
-  
-  // Devolver respuesta cacheada inmediatamente
-  const fetchPromise = fetch(request)
-    .then((networkResponse) => {
-      if (networkResponse.ok) {
-        console.log('🔄 Service Worker: Actualizando cache', request.url);
-        cache.put(request, networkResponse.clone());
-      }
-      return networkResponse;
-    })
-    .catch(() => {
-      // Ignorar errores de actualización
-    });
-  
-  event.waitUntil(fetchPromise);
-  
-  return cachedResponse || fetchPromise;
+// ===== CREAR RESPUESTA OFFLINE =====
+function createOfflineResponse() {
+  return new Response(
+    `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>ODAM - Sin Conexión</title>
+        <style>
+          body { 
+            font-family: 'Poppins', sans-serif; 
+            background: #000; 
+            color: #c8a25f; 
+            text-align: center; 
+            padding: 50px; 
+          }
+          h1 { color: #c8a25f; }
+          button { 
+            background: #c8a25f; 
+            color: #000; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer;
+            margin: 10px;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>🔌 Sin Conexión</h1>
+        <p>ODAM Producción Musical</p>
+        <p>La página no está disponible sin conexión.</p>
+        <button onclick="location.reload()">Reintentar</button>
+        <button onclick="history.back()">Volver</button>
+      </body>
+    </html>
+    `,
+    { 
+      headers: { 
+        'Content-Type': 'text/html',
+        'Cache-Control': 'no-cache'
+      } 
+    }
+  );
 }
 
-// ===== MANEJO OFFLINE =====
+// ===== MANEJO OFFLINE MEJORADO =====
 async function handleOfflineFallback(request) {
-  const cache = await caches.open(CACHE_NAME);
-  const cachedResponse = await cache.match(request);
-  
-  if (cachedResponse) {
-    return cachedResponse;
-  }
-  
-  // Fallback para páginas HTML
-  if (request.headers.get('Accept')?.includes('text/html')) {
-    const offlinePage = await cache.match('/offline.html');
-    if (offlinePage) {
-      return offlinePage;
+  try {
+    const cache = await caches.open(CACHE_NAME);
+    const cachedResponse = await cache.match(request);
+    
+    if (cachedResponse) {
+      return cachedResponse;
     }
     
-    // Crear página offline básica
-    return new Response(
-      `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>ODAM - Sin Conexión</title>
-          <style>
-            body { 
-              font-family: 'Poppins', sans-serif; 
-              background: #000; 
-              color: #c8a25f; 
-              text-align: center; 
-              padding: 50px; 
-            }
-            h1 { color: #c8a25f; }
-          </style>
-        </head>
-        <body>
-          <h1>🔌 Sin Conexión</h1>
-          <p>ODAM Producción Musical</p>
-          <p>La página no está disponible sin conexión.</p>
-          <button onclick="location.reload()">Reintentar</button>
-        </body>
-      </html>
-      `,
-      { headers: { 'Content-Type': 'text/html' } }
-    );
+    // Fallback para páginas HTML
+    if (request.headers.get('Accept')?.includes('text/html')) {
+      return createOfflineResponse();
+    }
+    
+    return new Response('Recurso no disponible offline', { 
+      status: 408,
+      statusText: 'Offline'
+    });
+  } catch (error) {
+    return createOfflineResponse();
   }
-  
-  return new Response('Recurso no disponible offline', { status: 408 });
 }
 
-// ===== DETECCIÓN DE ASSETS ESTÁTICOS =====
+// ===== DETECCIÓN DE ASSETS ESTÁTICOS MEJORADA =====
 function isStaticAsset(request) {
   const url = new URL(request.url);
   
@@ -327,40 +332,21 @@ function isStaticAsset(request) {
          isFontAwesome || isParticles;
 }
 
-// ===== SINCRONIZACIÓN EN BACKGROUND =====
-self.addEventListener('sync', (event) => {
-  console.log('🔄 Service Worker: Sincronización en background', event.tag);
-  
-  if (event.tag === 'background-sync') {
-    event.waitUntil(doBackgroundSync());
-  }
-});
-
-async function doBackgroundSync() {
-  try {
-    // Sincronizar datos pendientes (formularios, etc.)
-    const pendingData = await getPendingData();
-    
-    for (const data of pendingData) {
-      await syncData(data);
-    }
-    
-    console.log('✅ Service Worker: Sincronización completada');
-  } catch (error) {
-    console.error('❌ Service Worker: Error en sincronización', error);
-  }
-}
-
-// ===== NOTIFICACIONES PUSH =====
+// ===== NOTIFICACIONES PUSH CORREGIDAS =====
 self.addEventListener('push', (event) => {
   if (!event.data) return;
   
-  const data = event.data.json();
+  let data;
+  try {
+    data = event.data.json();
+  } catch (error) {
+    data = { title: 'ODAM Producción Musical', body: event.data.text() };
+  }
+  
   const options = {
     body: data.body || 'ODAM Producción Musical',
     icon: '/logo-192x192.png',
     badge: '/logo-192x192.png',
-    image: data.image || '/tu-foto.jpg',
     vibrate: [200, 100, 200],
     data: {
       url: data.url || '/'
@@ -387,7 +373,7 @@ self.addEventListener('notificationclick', (event) => {
   
   if (event.action === 'open') {
     event.waitUntil(
-      clients.openWindow(event.notification.data.url)
+      clients.openWindow(event.notification.data.url || '/')
     );
   }
 });
@@ -402,23 +388,23 @@ self.addEventListener('message', (event) => {
       break;
       
     case 'GET_VERSION':
-      event.ports[0].postMessage({
-        version: '2.0.0',
+      event.ports[0]?.postMessage({
+        version: '2.0.1',
         cacheName: CACHE_NAME
       });
       break;
       
     case 'CACHE_URLS':
-      cacheUrls(payload);
+      event.waitUntil(cacheUrls(payload));
       break;
       
     case 'CLEAR_CACHE':
-      clearCache();
+      event.waitUntil(clearCache());
       break;
   }
 });
 
-// ===== FUNCIONES AUXILIARES =====
+// ===== FUNCIONES AUXILIARES MEJORADAS =====
 async function cacheUrls(urls) {
   const cache = await caches.open(CACHE_NAME);
   const results = [];
@@ -450,74 +436,8 @@ async function clearCache() {
   console.log('🗑️ Service Worker: Cache limpiado');
 }
 
-async function getPendingData() {
-  // Obtener datos pendientes de IndexedDB o localStorage
-  return new Promise((resolve) => {
-    if (self.indexedDB) {
-      // Implementar lógica con IndexedDB
-      resolve([]);
-    } else {
-      resolve([]);
-    }
-  });
-}
-
-async function syncData(data) {
-  // Sincronizar datos con el servidor
-  try {
-    const response = await fetch('/api/sync', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data)
-    });
-    
-    if (response.ok) {
-      console.log('✅ Service Worker: Datos sincronizados');
-      return true;
-    }
-    
-    return false;
-  } catch (error) {
-    console.error('❌ Service Worker: Error sincronizando datos', error);
-    return false;
-  }
-}
-
-// ===== LIGHTHOUSE PERFORMANCE MONITORING =====
-function reportPerformanceMetrics() {
-  if ('performance' in self) {
-    const navigationTiming = performance.getEntriesByType('navigation')[0];
-    
-    if (navigationTiming) {
-      const metrics = {
-        loadTime: navigationTiming.loadEventEnd - navigationTiming.navigationStart,
-        domContentLoaded: navigationTiming.domContentLoadedEventEnd - navigationTiming.navigationStart,
-        firstByte: navigationTiming.responseStart - navigationTiming.requestStart,
-        cacheEffectiveness: calculateCacheEffectiveness()
-      };
-      
-      // Enviar métricas a Analytics
-      sendMetricsToAnalytics(metrics);
-    }
-  }
-}
-
-function calculateCacheEffectiveness() {
-  // Calcular efectividad del cache
-  return Math.random() * 100; // Placeholder
-}
-
-function sendMetricsToAnalytics(metrics) {
-  // Enviar métricas a Google Analytics
-  if (typeof gtag !== 'undefined') {
-    gtag('event', 'service_worker_metrics', metrics);
-  }
-}
-
 // ===== INICIALIZACIÓN =====
-console.log('🎵 ODAM Service Worker: Inicializado correctamente');
+console.log('🎵 ODAM Service Worker: Inicializado correctamente v2.0.1');
 console.log('📦 Cache Name:', CACHE_NAME);
 console.log('🔧 Estrategias:', CACHE_STRATEGIES);
 
@@ -528,7 +448,6 @@ if (typeof module !== 'undefined' && module.exports) {
     STATIC_ASSETS,
     CACHE_STRATEGIES,
     cacheFirstStrategy,
-    networkFirstStrategy,
-    staleWhileRevalidateStrategy
+    networkFirstStrategy
   };
 }

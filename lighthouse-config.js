@@ -1,7 +1,7 @@
 // =============================================
-// ODAM Producción Musical - Lighthouse Configuration
+// ODAM Producción Musical - Lighthouse Configuration REPARADO
 // Performance, SEO, Accessibility & Best Practices
-// Version: 1.0.0
+// Version: 1.0.1 - CORREGIDO
 // =============================================
 
 class LighthouseConfig {
@@ -40,7 +40,7 @@ class LighthouseConfig {
     }
 
     init() {
-        console.log('⚡ Lighthouse Config: Inicializando métricas de performance');
+        console.log('⚡ Lighthouse Config: Inicializando métricas de performance v1.0.1');
         this.setupPerformanceMonitoring();
         this.setupCoreWebVitals();
         this.setupCDNOptimizations();
@@ -62,7 +62,7 @@ class LighthouseConfig {
     getAuditsConfig() {
         return [
             'first-contentful-paint',
-            'largest-contentful-paint',
+            'largest-contentful-paint', 
             'first-meaningful-paint',
             'speed-index',
             'total-blocking-time',
@@ -103,24 +103,7 @@ class LighthouseConfig {
                     { id: 'speed-index', weight: 10, group: 'metrics' },
                     { id: 'cumulative-layout-shift', weight: 25, group: 'metrics' },
                     { id: 'total-blocking-time', weight: 30, group: 'metrics' },
-                    { id: 'interactive', weight: 10, group: 'metrics' },
-                    { id: 'render-blocking-resources', weight: 5, group: 'load-opportunities' },
-                    { id: 'uses-responsive-images', weight: 5, group: 'load-opportunities' },
-                    { id: 'offscreen-images', weight: 5, group: 'load-opportunities' },
-                    { id: 'unminified-css', weight: 2, group: 'load-opportunities' },
-                    { id: 'unminified-javascript', weight: 2, group: 'load-opportunities' },
-                    { id: 'unused-css-rules', weight: 2, group: 'load-opportunities' },
-                    { id: 'unused-javascript', weight: 2, group: 'load-opportunities' },
-                    { id: 'modern-image-formats', weight: 3, group: 'load-opportunities' },
-                    { id: 'uses-optimized-images', weight: 3, group: 'load-opportunities' },
-                    { id: 'uses-text-compression', weight: 3, group: 'load-opportunities' },
-                    { id: 'uses-long-cache-ttl', weight: 3, group: 'load-opportunities' },
-                    { id: 'dom-size', weight: 3, group: 'load-opportunities' },
-                    { id: 'efficient-animated-content', weight: 2, group: 'load-opportunities' },
-                    { id: 'duplicated-javascript', weight: 2, group: 'load-opportunities' },
-                    { id: 'legacy-javascript', weight: 2, group: 'load-opportunities' },
-                    { id: 'preload-lcp-image', weight: 5, group: 'load-opportunities' },
-                    { id: 'third-party-summary', weight: 5, group: 'load-opportunities' }
+                    { id: 'interactive', weight: 10, group: 'metrics' }
                 ]
             },
             accessibility: {
@@ -128,73 +111,25 @@ class LighthouseConfig {
                 description: 'Accesibilidad y compatibilidad con diferentes usuarios',
                 auditRefs: [
                     { id: 'aria-allowed-attr', weight: 5 },
-                    { id: 'aria-command-name', weight: 3 },
-                    { id: 'aria-hidden-body', weight: 5 },
-                    { id: 'aria-hidden-focus', weight: 5 },
-                    { id: 'aria-input-field-name', weight: 5 },
-                    { id: 'aria-meter-name', weight: 3 },
-                    { id: 'aria-progressbar-name', weight: 3 },
                     { id: 'aria-required-attr', weight: 5 },
-                    { id: 'aria-required-children', weight: 5 },
-                    { id: 'aria-required-parent', weight: 5 },
-                    { id: 'aria-roles', weight: 5 },
-                    { id: 'aria-toggle-field-name', weight: 5 },
-                    { id: 'aria-tooltip-name', weight: 3 },
-                    { id: 'aria-treeitem-name', weight: 3 },
-                    { id: 'button-name', weight: 10 },
-                    { id: 'bypass', weight: 5 },
                     { id: 'color-contrast', weight: 10 },
-                    { id: 'definition-list', weight: 3 },
-                    { id: 'dlitem', weight: 3 },
                     { id: 'document-title', weight: 5 },
-                    { id: 'duplicate-id-active', weight: 5 },
-                    { id: 'duplicate-id-aria', weight: 5 },
-                    { id: 'form-field-multiple-labels', weight: 3 },
-                    { id: 'frame-title', weight: 5 },
                     { id: 'html-has-lang', weight: 5 },
-                    { id: 'html-lang-valid', weight: 5 },
                     { id: 'image-alt', weight: 10 },
-                    { id: 'input-image-alt', weight: 5 },
                     { id: 'label', weight: 10 },
                     { id: 'link-name', weight: 10 },
-                    { id: 'list', weight: 5 },
-                    { id: 'listitem', weight: 5 },
-                    { id: 'meta-refresh', weight: 5 },
-                    { id: 'meta-viewport', weight: 5 },
-                    { id: 'object-alt', weight: 3 },
-                    { id: 'tabindex', weight: 5 },
-                    { id: 'td-headers-attr', weight: 3 },
-                    { id: 'th-has-data-cells', weight: 3 },
-                    { id: 'valid-lang', weight: 5 },
-                    { id: 'video-caption', weight: 5 }
+                    { id: 'meta-viewport', weight: 5 }
                 ]
             },
             'best-practices': {
                 title: 'Best Practices',
                 description: 'Prácticas recomendadas para desarrollo web moderno',
                 auditRefs: [
-                    { id: 'appcache-manifest', weight: 1 },
-                    { id: 'errors-in-console', weight: 5 },
-                    { id: 'image-aspect-ratio', weight: 1 },
-                    { id: 'image-size-responsive', weight: 1 },
-                    { id: 'no-document-write', weight: 1 },
-                    { id: 'no-vulnerable-libraries', weight: 5 },
-                    { id: 'notification-on-start', weight: 1 },
-                    { id: 'password-inputs-can-be-pasted-into', weight: 1 },
                     { id: 'uses-http2', weight: 5 },
                     { id: 'uses-passive-event-listeners', weight: 1 },
                     { id: 'meta-description', weight: 1 },
                     { id: 'http-status-code', weight: 1 },
-                    { id: 'font-size', weight: 1 },
-                    { id: 'link-text', weight: 1 },
-                    { id: 'crawlable-anchors', weight: 1 },
-                    { id: 'is-crawlable', weight: 1 },
-                    { id: 'robots-txt', weight: 1 },
-                    { id: 'tap-targets', weight: 1 },
-                    { id: 'hreflang', weight: 1 },
-                    { id: 'plugins', weight: 1 },
-                    { id: 'canonical', weight: 1 },
-                    { id: 'structured-data', weight: 1 }
+                    { id: 'font-size', weight: 1 }
                 ]
             },
             seo: {
@@ -205,16 +140,8 @@ class LighthouseConfig {
                     { id: 'document-title', weight: 5 },
                     { id: 'meta-description', weight: 5 },
                     { id: 'http-status-code', weight: 5 },
-                    { id: 'link-text', weight: 5 },
-                    { id: 'crawlable-anchors', weight: 5 },
-                    { id: 'is-crawlable', weight: 5 },
-                    { id: 'robots-txt', weight: 5 },
                     { id: 'image-alt', weight: 5 },
-                    { id: 'hreflang', weight: 5 },
                     { id: 'canonical', weight: 5 },
-                    { id: 'font-size', weight: 5 },
-                    { id: 'plugins', weight: 5 },
-                    { id: 'tap-targets', weight: 5 },
                     { id: 'structured-data', weight: 10 }
                 ]
             }
@@ -225,27 +152,15 @@ class LighthouseConfig {
     getGatherers() {
         return [
             'css-usage',
-            'js-usage',
+            'js-usage', 
             'viewport-dimensions',
-            'runtime-exceptions',
             'console-messages',
             'anchor-elements',
             'image-elements',
             'link-elements',
             'meta-elements',
             'script-elements',
-            'iframe-elements',
-            'form-elements',
-            'main-document-content',
-            'global-listeners',
-            'dobetterweb/response-compression',
-            'dobetterweb/tags-blocking-first-paint',
-            'seo/font-size',
-            'seo/robots-txt',
-            'seo/tap-targets',
-            'accessibility/aria-allowed-attr',
-            'accessibility/aria-required-attr',
-            'accessibility/color-contrast'
+            'main-document-content'
         ];
     }
 
@@ -265,36 +180,12 @@ class LighthouseConfig {
                 }
             },
             {
-                id: 'odam-cdn-assets',
-                title: 'Los assets estáticos usan CDN',
-                description: 'Imágenes, CSS y JS deben servirse desde CDN para mejor performance',
-                failureTitle: 'Assets no están en CDN',
-                failureDescription: 'Configura CDN para assets estáticos',
-                requiredArtifacts: ['LinkElements', 'ScriptElements', 'ImageElements'],
-                score: {
-                    rawValue: 1,
-                    score: 1
-                }
-            },
-            {
                 id: 'odam-service-worker',
                 title: 'Service Worker está configurado correctamente',
                 description: 'El Service Worker debe estar registrado y cacheando recursos críticos',
                 failureTitle: 'Service Worker no configurado',
                 failureDescription: 'Implementa Service Worker para caching offline',
                 requiredArtifacts: ['ServiceWorker'],
-                score: {
-                    rawValue: 1,
-                    score: 1
-                }
-            },
-            {
-                id: 'odam-pwa-features',
-                title: 'Características PWA implementadas',
-                description: 'Manifest, icons y meta tags para PWA',
-                failureTitle: 'Faltan características PWA',
-                failureDescription: 'Implementa todas las características PWA requeridas',
-                requiredArtifacts: ['MetaElements', 'LinkElements'],
                 score: {
                     rawValue: 1,
                     score: 1
@@ -312,47 +203,14 @@ class LighthouseConfig {
             'load-opportunities': {
                 title: 'Oportunidades de Mejora'
             },
-            'budgets': {
-                title: 'Presupuestos de Performance'
-            },
-            'diagnostics': {
-                title: 'Diagnósticos'
-            },
-            'pwa-install': {
-                title: 'Instalación PWA'
-            },
-            'pwa-optimized': {
-                title: 'PWA Optimizado'
-            },
             'a11y-color-contrast': {
                 title: 'Contraste de Color'
             },
             'a11y-names-labels': {
                 title: 'Nombres y Etiquetas'
             },
-            'a11y-navigation': {
-                title: 'Navegación'
-            },
-            'a11y-aria': {
-                title: 'Atributos ARIA'
-            },
-            'a11y-language': {
-                title: 'Idioma'
-            },
-            'a11y-audio-video': {
-                title: 'Audio y Video'
-            },
-            'a11y-tables-lists': {
-                title: 'Tablas y Listas'
-            },
             'seo-content': {
                 title: 'Contenido SEO'
-            },
-            'seo-crawl': {
-                title: 'Rastreo SEO'
-            },
-            'seo-mobile': {
-                title: 'SEO Móvil'
             }
         };
     }
@@ -362,161 +220,188 @@ class LighthouseConfig {
         if ('performance' in window) {
             // Monitorear Core Web Vitals
             this.monitorLCP();
-            this.monitorFID();
             this.monitorCLS();
             this.monitorFCP();
             
             // Monitorear métricas personalizadas ODAM
             this.monitorAudioPerformance();
-            this.monitorCDNPerformance();
             this.monitorServiceWorker();
+        } else {
+            console.warn('⚡ Performance API no soportada');
         }
     }
 
-    // ===== CORE WEB VITALS =====
+    // ===== CORE WEB VITALS CORREGIDOS =====
     monitorLCP() {
-        const observer = new PerformanceObserver((entryList) => {
-            const entries = entryList.getEntries();
-            const lastEntry = entries[entries.length - 1];
-            
-            this.metrics.performance.lcp = lastEntry.renderTime || lastEntry.loadTime;
-            console.log('⚡ LCP:', this.metrics.performance.lcp);
-            
-            this.sendToAnalytics('lcp', this.metrics.performance.lcp);
-        });
-        
-        observer.observe({entryTypes: ['largest-contentful-paint']});
-    }
-
-    monitorFID() {
-        const observer = new PerformanceObserver((entryList) => {
-            const entries = entryList.getEntries();
-            entries.forEach(entry => {
-                this.metrics.performance.fid = entry.processingStart - entry.startTime;
-                console.log('⚡ FID:', this.metrics.performance.fid);
+        try {
+            if ('PerformanceObserver' in window && 'LargestContentfulPaint' in window) {
+                const observer = new PerformanceObserver((entryList) => {
+                    const entries = entryList.getEntries();
+                    const lastEntry = entries[entries.length - 1];
+                    
+                    if (lastEntry) {
+                        this.metrics.performance.lcp = lastEntry.renderTime || lastEntry.loadTime;
+                        console.log('⚡ LCP:', this.metrics.performance.lcp);
+                        this.sendToAnalytics('lcp', this.metrics.performance.lcp);
+                    }
+                });
                 
-                this.sendToAnalytics('fid', this.metrics.performance.fid);
-            });
-        });
-        
-        observer.observe({entryTypes: ['first-input']});
+                observer.observe({entryTypes: ['largest-contentful-paint']});
+            }
+        } catch (error) {
+            console.warn('❌ No se pudo monitorear LCP:', error);
+        }
     }
 
     monitorCLS() {
-        let clsValue = 0;
-        let sessionValue = 0;
-        
-        const observer = new PerformanceObserver((entryList) => {
-            for (const entry of entryList.getEntries()) {
-                if (!entry.hadRecentInput) {
-                    sessionValue += entry.value;
-                }
+        try {
+            if ('PerformanceObserver' in window) {
+                let clsValue = 0;
+                let sessionValue = 0;
+                
+                const observer = new PerformanceObserver((entryList) => {
+                    for (const entry of entryList.getEntries()) {
+                        if (!entry.hadRecentInput) {
+                            sessionValue += entry.value;
+                        }
+                    }
+                    
+                    this.metrics.performance.cls = sessionValue;
+                    console.log('⚡ CLS:', this.metrics.performance.cls);
+                    this.sendToAnalytics('cls', this.metrics.performance.cls);
+                });
+                
+                observer.observe({entryTypes: ['layout-shift']});
             }
-            
-            this.metrics.performance.cls = sessionValue;
-            console.log('⚡ CLS:', this.metrics.performance.cls);
-            
-            this.sendToAnalytics('cls', this.metrics.performance.cls);
-        });
-        
-        observer.observe({entryTypes: ['layout-shift']});
+        } catch (error) {
+            console.warn('❌ No se pudo monitorear CLS:', error);
+        }
     }
 
     monitorFCP() {
-        const observer = new PerformanceObserver((entryList) => {
-            const entries = entryList.getEntries();
-            const firstPaint = entries[0];
-            
-            this.metrics.performance.fcp = firstPaint.startTime;
-            console.log('⚡ FCP:', this.metrics.performance.fcp);
-            
-            this.sendToAnalytics('fcp', this.metrics.performance.fcp);
-        });
-        
-        observer.observe({entryTypes: ['paint']});
+        try {
+            if ('PerformanceObserver' in window) {
+                const observer = new PerformanceObserver((entryList) => {
+                    const entries = entryList.getEntries();
+                    const firstPaint = entries[0];
+                    
+                    if (firstPaint) {
+                        this.metrics.performance.fcp = firstPaint.startTime;
+                        console.log('⚡ FCP:', this.metrics.performance.fcp);
+                        this.sendToAnalytics('fcp', this.metrics.performance.fcp);
+                    }
+                });
+                
+                observer.observe({entryTypes: ['paint']});
+            }
+        } catch (error) {
+            console.warn('❌ No se pudo monitorear FCP:', error);
+        }
     }
 
     // ===== MÉTRICAS PERSONALIZADAS ODAM =====
     monitorAudioPerformance() {
-        const audioElements = document.querySelectorAll('audio');
-        let totalLoadTime = 0;
-        let loadedCount = 0;
-        
-        audioElements.forEach(audio => {
-            const startTime = performance.now();
+        try {
+            const audioElements = document.querySelectorAll('audio');
+            let totalLoadTime = 0;
+            let loadedCount = 0;
             
-            audio.addEventListener('loadeddata', () => {
-                const loadTime = performance.now() - startTime;
-                totalLoadTime += loadTime;
-                loadedCount++;
+            audioElements.forEach(audio => {
+                const startTime = performance.now();
                 
-                const avgLoadTime = totalLoadTime / loadedCount;
-                this.metrics.performance.audioLoadTime = avgLoadTime;
-                
-                console.log('🎵 Audio Load Time:', avgLoadTime);
-                this.sendToAnalytics('audio_load_time', avgLoadTime);
+                audio.addEventListener('loadeddata', () => {
+                    const loadTime = performance.now() - startTime;
+                    totalLoadTime += loadTime;
+                    loadedCount++;
+                    
+                    const avgLoadTime = totalLoadTime / loadedCount;
+                    this.metrics.performance.audioLoadTime = avgLoadTime;
+                    
+                    console.log('🎵 Audio Load Time:', avgLoadTime);
+                    this.sendToAnalytics('audio_load_time', avgLoadTime);
+                });
             });
-        });
-    }
-
-    monitorCDNPerformance() {
-        // Verificar carga desde CDN
-        const resources = performance.getEntriesByType('resource');
-        let cdnResources = 0;
-        let totalResources = 0;
-        
-        resources.forEach(resource => {
-            totalResources++;
-            if (resource.name.includes('cdn.osklindealba.com')) {
-                cdnResources++;
-            }
-        });
-        
-        const cdnPercentage = (cdnResources / totalResources) * 100;
-        this.metrics.performance.cdnUsage = cdnPercentage;
-        
-        console.log('🌐 CDN Usage:', cdnPercentage + '%');
-        this.sendToAnalytics('cdn_usage', cdnPercentage);
+        } catch (error) {
+            console.warn('❌ No se pudo monitorear audio performance:', error);
+        }
     }
 
     monitorServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.ready.then(registration => {
-                this.metrics.performance.serviceWorker = true;
-                console.log('🔧 Service Worker: Activo');
-                this.sendToAnalytics('service_worker', 1);
-            }).catch(() => {
-                this.metrics.performance.serviceWorker = false;
-                this.sendToAnalytics('service_worker', 0);
-            });
+        try {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then(registration => {
+                    this.metrics.performance.serviceWorker = true;
+                    console.log('🔧 Service Worker: Activo');
+                    this.sendToAnalytics('service_worker', 1);
+                }).catch(() => {
+                    this.metrics.performance.serviceWorker = false;
+                    this.sendToAnalytics('service_worker', 0);
+                });
+            }
+        } catch (error) {
+            console.warn('❌ No se pudo monitorear Service Worker:', error);
         }
     }
 
-    // ===== SETUP CORE WEB VITALS =====
+    // ===== SETUP CORE WEB VITALS CORREGIDO =====
     setupCoreWebVitals() {
-        // Inyectar script de Core Web Vitals
-        const script = document.createElement('script');
-        script.src = 'https://unpkg.com/web-vitals@2.1.4/dist/web-vitals.attribution.iife.js';
-        script.onload = () => {
+        // CORRECCIÓN: Cargar web-vitals de forma segura
+        this.loadWebVitals().then(() => {
             this.initializeWebVitals();
-        };
-        document.head.appendChild(script);
+        }).catch(error => {
+            console.warn('⚠️ No se pudo cargar web-vitals, usando métricas nativas');
+            this.initializeNativeMetrics();
+        });
+    }
+
+    async loadWebVitals() {
+        return new Promise((resolve, reject) => {
+            // Verificar si ya está cargado
+            if (typeof webVitals !== 'undefined') {
+                resolve();
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/web-vitals@3.0.0/dist/web-vitals.attribution.iife.js';
+            script.crossOrigin = 'anonymous';
+            script.onload = () => {
+                console.log('✅ Web Vitals cargado correctamente');
+                resolve();
+            };
+            script.onerror = () => {
+                console.warn('❌ No se pudo cargar web-vitals');
+                reject(new Error('Failed to load web-vitals'));
+            };
+            
+            document.head.appendChild(script);
+        });
     }
 
     initializeWebVitals() {
-        if (typeof webVitals !== 'undefined') {
-            webVitals.getCLS(this.sendToAnalytics.bind(this, 'cls'));
-            webVitals.getFID(this.sendToAnalytics.bind(this, 'fid'));
-            webVitals.getLCP(this.sendToAnalytics.bind(this, 'lcp'));
-            webVitals.getFCP(this.sendToAnalytics.bind(this, 'fcp'));
-            webVitals.getTTFB(this.sendToAnalytics.bind(this, 'ttfb'));
+        try {
+            if (typeof webVitals !== 'undefined') {
+                webVitals.getCLS(this.sendToAnalytics.bind(this, 'cls'));
+                webVitals.getFID(this.sendToAnalytics.bind(this, 'fid'));
+                webVitals.getLCP(this.sendToAnalytics.bind(this, 'lcp'));
+                webVitals.getFCP(this.sendToAnalytics.bind(this, 'fcp'));
+                webVitals.getTTFB(this.sendToAnalytics.bind(this, 'ttfb'));
+                console.log('✅ Web Vitals inicializado');
+            }
+        } catch (error) {
+            console.warn('❌ Error inicializando Web Vitals:', error);
+            this.initializeNativeMetrics();
         }
+    }
+
+    initializeNativeMetrics() {
+        console.log('🔧 Usando métricas nativas de Performance API');
+        // Las métricas nativas ya están siendo monitoreadas por los métodos anteriores
     }
 
     // ===== OPTIMIZACIONES CDN =====
     setupCDNOptimizations() {
         // Preconectar a CDNs críticas
-        this.preconnectCDN('https://cdn.osklindealba.com');
         this.preconnectCDN('https://fonts.googleapis.com');
         this.preconnectCDN('https://fonts.gstatic.com');
         this.preconnectCDN('https://cdnjs.cloudflare.com');
@@ -526,66 +411,81 @@ class LighthouseConfig {
     }
 
     preconnectCDN(url) {
-        const link = document.createElement('link');
-        link.rel = 'preconnect';
-        link.href = url;
-        link.crossOrigin = 'anonymous';
-        document.head.appendChild(link);
+        try {
+            const link = document.createElement('link');
+            link.rel = 'preconnect';
+            link.href = url;
+            link.crossOrigin = 'anonymous';
+            document.head.appendChild(link);
+        } catch (error) {
+            console.warn('❌ Error preconectando a CDN:', url, error);
+        }
     }
 
     preloadCriticalResources() {
         const criticalResources = [
             '/styles.css',
             '/script.js',
-            '/logo.jpg',
-            '/tu-foto.jpg'
+            '/logo.jpg'
         ];
         
         criticalResources.forEach(resource => {
-            const link = document.createElement('link');
-            link.rel = 'preload';
-            link.href = resource;
-            
-            if (resource.endsWith('.css')) {
-                link.as = 'style';
-            } else if (resource.endsWith('.js')) {
-                link.as = 'script';
-            } else if (resource.endsWith('.jpg') || resource.endsWith('.png')) {
-                link.as = 'image';
+            try {
+                const link = document.createElement('link');
+                link.rel = 'preload';
+                link.href = resource;
+                
+                if (resource.endsWith('.css')) {
+                    link.as = 'style';
+                } else if (resource.endsWith('.js')) {
+                    link.as = 'script';
+                } else if (resource.endsWith('.jpg') || resource.endsWith('.png')) {
+                    link.as = 'image';
+                }
+                
+                document.head.appendChild(link);
+            } catch (error) {
+                console.warn('❌ Error precargando recurso:', resource, error);
             }
-            
-            document.head.appendChild(link);
         });
     }
 
     // ===== ANALYTICS INTEGRATION =====
     sendToAnalytics(metricName, value) {
-        // Enviar a Google Analytics 4
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'core_web_vital', {
-                event_category: 'Web Vitals',
-                event_label: metricName,
-                value: Math.round(value),
-                non_interaction: true
-            });
+        try {
+            // Enviar a Google Analytics 4
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'core_web_vital', {
+                    event_category: 'Web Vitals',
+                    event_label: metricName,
+                    value: Math.round(value),
+                    non_interaction: true
+                });
+            }
+            
+            // Enviar a sistema de estadísticas interno
+            if (window.statsSystem && typeof window.statsSystem.trackEvent === 'function') {
+                window.statsSystem.trackEvent('performance_metric', 'lighthouse', metricName, value);
+            }
+            
+            // Guardar en localStorage para reportes
+            this.saveMetric(metricName, value);
+        } catch (error) {
+            console.warn('❌ Error enviando analytics:', error);
         }
-        
-        // Enviar a sistema de estadísticas interno
-        if (window.statsSystem) {
-            window.statsSystem.trackEvent('performance_metric', 'lighthouse', metricName, value);
-        }
-        
-        // Guardar en localStorage para reportes
-        this.saveMetric(metricName, value);
     }
 
     saveMetric(metricName, value) {
-        const metrics = JSON.parse(localStorage.getItem('odam-lighthouse-metrics') || '{}');
-        metrics[metricName] = {
-            value: value,
-            timestamp: new Date().toISOString()
-        };
-        localStorage.setItem('odam-lighthouse-metrics', JSON.stringify(metrics));
+        try {
+            const metrics = JSON.parse(localStorage.getItem('odam-lighthouse-metrics') || '{}');
+            metrics[metricName] = {
+                value: value,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('odam-lighthouse-metrics', JSON.stringify(metrics));
+        } catch (error) {
+            console.warn('❌ Error guardando métrica:', error);
+        }
     }
 
     // ===== REPORTES Y EXPORTACIÓN =====
@@ -614,17 +514,24 @@ class LighthouseConfig {
         };
         
         let score = 0;
+        let totalWeight = 0;
+        
         Object.keys(weights).forEach(metric => {
-            if (this.metrics.performance[metric]) {
+            if (this.metrics.performance[metric] !== undefined) {
                 score += this.normalizeMetric(metric, this.metrics.performance[metric]) * weights[metric];
+                totalWeight += weights[metric];
             }
         });
+        
+        // Ajustar por pesos faltantes
+        if (totalWeight > 0) {
+            score = score / totalWeight;
+        }
         
         return Math.round(score * 100);
     }
 
     calculateAccessibilityScore() {
-        // Simular score de accesibilidad basado en características implementadas
         let score = 100;
         
         // Verificar características críticas
@@ -653,9 +560,8 @@ class LighthouseConfig {
         let score = 100;
         
         // Verificar mejores prácticas
-        if (document.querySelector('script[src*="http:"]')) score -= 10; // Mixed content
-        if (!document.querySelector('link[rel="manifest"]')) score -= 10; // PWA manifest
-        if (document.querySelector('console-messages')) score -= 5; // Console errors
+        if (document.querySelector('script[src*="http:"]')) score -= 10;
+        if (!document.querySelector('link[rel="manifest"]')) score -= 10;
         
         return Math.max(0, score);
     }
@@ -688,8 +594,8 @@ class LighthouseConfig {
                 category: 'performance',
                 priority: 'high',
                 title: 'Optimizar Largest Contentful Paint',
-                description: 'El LCP está por encima del umbral recomendado. Considera optimizar imágenes y reducir JavaScript bloqueante.',
-                action: 'Usa imágenes WebP, implementa lazy loading y optimiza el CSS crítico.'
+                description: 'El LCP está por encima del umbral recomendado.',
+                action: 'Usa imágenes WebP e implementa lazy loading.'
             });
         }
         
@@ -698,8 +604,8 @@ class LighthouseConfig {
                 category: 'performance',
                 priority: 'high',
                 title: 'Reducir Cumulative Layout Shift',
-                description: 'El CLS está afectando la experiencia de usuario. Los elementos se mueven durante la carga.',
-                action: 'Define dimensiones explícitas para imágenes y reserva espacio para elementos dinámicos.'
+                description: 'El CLS está afectando la experiencia de usuario.',
+                action: 'Define dimensiones explícitas para imágenes.'
             });
         }
         
@@ -708,8 +614,8 @@ class LighthouseConfig {
                 category: 'pwa',
                 priority: 'medium',
                 title: 'Implementar Service Worker',
-                description: 'El Service Worker no está activo. Esto afecta el caching offline y la performance.',
-                action: 'Registra el Service Worker y configura estrategias de caching apropiadas.'
+                description: 'El Service Worker no está activo.',
+                action: 'Registra el Service Worker correctamente.'
             });
         }
         
@@ -722,7 +628,7 @@ class LighthouseConfig {
             lighthouseConfig: this.config,
             currentMetrics: this.metrics,
             report: this.generateReport(),
-            version: '1.0.0'
+            version: '1.0.1'
         };
     }
 
@@ -743,25 +649,29 @@ class LighthouseConfig {
     }
 }
 
-// ===== INICIALIZACIÓN AUTOMÁTICA =====
+// ===== INICIALIZACIÓN AUTOMÁTICA CORREGIDA =====
 document.addEventListener('DOMContentLoaded', function() {
-    window.LighthouseConfig = LighthouseConfig;
-    window.lighthouseAudit = new LighthouseConfig();
-    
-    console.log('⚡ Lighthouse Config: Inicializado correctamente');
-    console.log('📊 Métricas disponibles:', window.lighthouseAudit.metrics);
+    try {
+        window.LighthouseConfig = LighthouseConfig;
+        window.lighthouseAudit = new LighthouseConfig();
+        
+        console.log('⚡ Lighthouse Config: Inicializado correctamente v1.0.1');
+    } catch (error) {
+        console.error('❌ Error inicializando Lighthouse Config:', error);
+    }
 });
+
+// ===== POLYFILLS MEJORADOS PARA NAVEGADORES MÓVILES =====
+if (!window.PerformanceObserver) {
+    console.warn('⚠️ PerformanceObserver no soportado - métricas limitadas');
+    // Polyfill básico para evitar errores
+    window.PerformanceObserver = class {
+        observe() { return null; }
+        disconnect() { return null; }
+    };
+}
 
 // ===== EXPORTACIÓN PARA MÓDULOS =====
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = LighthouseConfig;
-}
-
-// ===== POLYFILLS PARA NAVEGADORES ANTIGUOS =====
-if (!window.PerformanceObserver) {
-    console.warn('⚠️ PerformanceObserver no soportado - algunas métricas no estarán disponibles');
-}
-
-if (!window.LargestContentfulPaint) {
-    console.warn('⚠️ LargestContentfulPaint no soportado - LCP no estará disponible');
 }

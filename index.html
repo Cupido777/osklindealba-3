@@ -276,16 +276,16 @@
                 <span class="hamburger"></span>
             </button>
             <nav id="site-nav" role="navigation" aria-label="Navegación principal">
-                <a href="#inicio">Inicio</a>
-                <a href="#servicios">Servicios</a>
-                <a href="#proyectos">Proyectos</a>
-                <a href="#fe">Inspiración</a>
-                <a href="#interaccion">Interacción</a>
-                <a href="#contacto">Contacto</a>
-                <a class="cta" href="https://wa.me/573142905621?text=Hola%20ODAM%2C%20quiero%20informaci%C3%B3n%20sobre%20tus%20servicios." target="_blank" rel="noopener">
-                    <i class="fab fa-whatsapp" aria-hidden="true"></i> WhatsApp
-                </a>
-            </nav>
+    <a href="#inicio">Inicio</a>
+    <a href="#servicios">Servicios</a>
+    <a href="#proyectos">Proyectos</a>
+    <a href="#fe">Inspiración</a> <!-- ESTA LÍNEA DEBE SER ASÍ -->
+    <a href="#interaccion">Interacción</a>
+    <a href="#contacto">Contacto</a>
+    <a class="cta" href="https://wa.me/573142905621?text=Hola%20ODAM%2C%20quiero%20informaci%C3%B3n%20sobre%20tus%20servicios." target="_blank" rel="noopener">
+        <i class="fab fa-whatsapp" aria-hidden="true"></i> WhatsApp
+    </a>
+</nav>
         </div>
     </header>
 
@@ -675,7 +675,7 @@
                             <i class="fas fa-play-circle" aria-hidden="true"></i> Solicitar Similar
                         </a>
                     </div>
-                    <!-- CORRECCIÓN: ID del audio corregido -->
+                    <!-- CORRECCIÓN CRÍTICA: ID del audio corregido para que coincida con JavaScript -->
                     <audio id="audio-el-diezmo-es-del-senor-version-bachata" src="el-diezmo-es-del-senor-version-bachata.mp3" preload="metadata"></audio>
                 </div>
 
@@ -771,21 +771,25 @@
             </div>
         </section>
 
-        <!-- === SECCIÓN INSPIRACIÓN (VERSÍCULOS) - RESTAURADA === -->
-        <section id="fe" class="section inspiration-section" aria-labelledby="fe-title">
-            <div class="section-header">
-                <h2 id="fe-title" class="section-title">Inspiración y Fe</h2>
-                <p class="section-subtitle">Reflexiones y contenido con propósito espiritual</p>
+      <!-- === SECCIÓN INSPIRACIÓN (VERSÍCULOS) - CORREGIDA === -->
+<section id="fe" class="section inspiration-section" aria-labelledby="fe-title">
+    <div class="section-header">
+        <h2 id="fe-title" class="section-title">Inspiración Y Fe</h2>
+        <p class="section-subtitle">Palabras llenas de sabiduría y motivación para tu día</p>
+    </div>
+    <div class="inspiration-content">
+        <blockquote class="inspiration-quote fade-in" id="bible-verse">
+            <div class="verse-content">
+                <p class="verse-text">Cargando versículo inspirador...</p>
+                <p class="verse-reference">— Por favor espera</p>
             </div>
-            <div class="inspiration-content">
-                <blockquote class="inspiration-quote fade-in" id="bible-verse">
-                    <!-- El versículo se cargará dinámicamente -->
-                    <div class="verse-text">Cargando versículo...</div>
-                    <div class="verse-reference"></div>
-                </blockquote>
-            </div>
-        </section>
-
+        </blockquote>
+    </div>
+</section>
+        
+<!-- Scripts al final del body -->
+<script src="bible-rv1960.js"></script>
+<script src="inspiration-system.js"></script>
         <!-- === SECCIÓN INTERACCIÓN (ESTADÍSTICAS) - RESTAURADA === -->
         <section id="interaccion" class="section interaction-section" aria-labelledby="interaccion-title">
             <div class="section-header">
@@ -891,41 +895,46 @@
         </div>
     </footer>
 
-    <!-- === SCRIPTS OPTIMIZADOS CON DEFER === -->
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js" defer></script>
+<!-- === SCRIPTS OPTIMIZADOS CON DEFER === -->
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js" defer></script>
+
+<!-- === SISTEMAS PRINCIPALES === -->
+<script src="script.js" defer></script>
+<script src="stats-system.js" defer></script>
+<script src="lighthouse-config.js" defer></script>
+
+<!-- === SISTEMA DE VERSÍCULOS BÍBLICOS (ORDEN CORRECTO) === -->
+<script src="bible-rv1960.js" defer></script>
+<script src="inspiration-system.js" defer></script>
     
-    <!-- === SISTEMAS PRINCIPALES === -->
-    <script src="script.js" defer></script>
-    <script src="stats-system.js" defer></script>
-    <script src="lighthouse-config.js" defer></script>
-
-    <!-- === SERVICE WORKER REGISTRATION === -->
-    <script>
-        // Registrar Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js')
-                    .then(function(registration) {
-                        console.log('✅ ServiceWorker registration successful');
-                    })
-                    .catch(function(error) {
-                        console.log('❌ ServiceWorker registration failed: ', error);
-                    });
-            });
-        }
-
-        // Detectar modo PWA standalone
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            document.documentElement.classList.add('pwa-standalone');
-        }
-
-        // Inicializar token CSRF en formulario de contacto
-        document.addEventListener('DOMContentLoaded', function() {
-            const csrfInput = document.getElementById('contact-csrf-token');
-            if (csrfInput && window.csrfTokenManager) {
-                csrfInput.value = window.csrfTokenManager.getToken();
-            }
+<!-- === SERVICE WORKER REGISTRATION === -->
+<script>
+    // Registrar Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('sw.js')
+                .then(function(registration) {
+                    console.log('✅ ServiceWorker registration successful');
+                })
+                .catch(function(error) {
+                    console.log('❌ ServiceWorker registration failed: ', error);
+                });
         });
-    </script>
+    }
+
+    // Detectar modo PWA standalone
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        document.documentElement.classList.add('pwa-standalone');
+    }
+
+    // Inicializar token CSRF en formulario de contacto
+    document.addEventListener('DOMContentLoaded', function() {
+        const csrfInput = document.getElementById('contact-csrf-token');
+        if (csrfInput && window.csrfTokenManager) {
+            csrfInput.value = window.csrfTokenManager.getToken();
+        }
+    });
+</script>
+    
 </body>
 </html>

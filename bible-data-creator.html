@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generador de Base de Datos Bíblica</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        button { 
+            background: #2c3e50; 
+            color: white; 
+            padding: 15px 30px; 
+            border: none; 
+            border-radius: 5px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            margin: 10px; 
+        }
+        button:hover { background: #34495e; }
+        .info { background: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0; }
+        .progress { width: 100%; background: #ecf0f1; border-radius: 5px; margin: 20px 0; }
+        .progress-bar { 
+            height: 20px; 
+            background: #27ae60; 
+            border-radius: 5px; 
+            width: 0%; 
+            transition: width 0.3s; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📖 Generador de Base de Datos Bíblica</h1>
+        
+        <div class="info">
+            <h3>Características:</h3>
+            <ul>
+                <li>✅ 31,102 versículos estructurados</li>
+                <li>✅ 66 libros de la Biblia</li>
+                <li>✅ Capítulos y versículos realistas</li>
+                <li>✅ Formato JSON compatible</li>
+                <li>✅ Libre de derechos de autor</li>
+            </ul>
+        </div>
+
+        <button onclick="generateFullBible()">🎯 Generar Biblia Completa (31,102 versículos)</button>
+        <button onclick="generateSampleBible()">📚 Generar Muestra (1,000 versículos)</button>
+
+        <div class="progress" id="progressContainer" style="display: none;">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div id="status"></div>
+    </div>
+
+    <script src="bible-data-generator.js"></script>
+    <script>
+        function generateFullBible() {
+            document.getElementById('progressContainer').style.display = 'block';
+            document.getElementById('status').innerHTML = '🔄 Generando 31,102 versículos...';
+            
+            setTimeout(() => {
+                window.generateBibleData();
+                document.getElementById('status').innerHTML = 
+                    '✅ ¡Base de datos generada! Se descargará automáticamente.';
+                document.getElementById('progressContainer').style.display = 'none';
+            }, 1000);
+        }
+
+        function generateSampleBible() {
+            const generator = new BibleDataGenerator();
+            const verses = generator.generateSampleVerses(1000);
+            generator.saveToFile(verses, 'bible-data-sample.json');
+            document.getElementById('status').innerHTML = 
+                '✅ Muestra de 1,000 versículos generada y descargada.';
+        }
+    </script>
+</body>
+</html>
